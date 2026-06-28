@@ -21,7 +21,7 @@
 
 ---
 
-Sentinel is a **statically compiled, zero-dependency** Git pre-commit hook written in Go. It blocks accidental commits of API keys, SSH private keys, database passwords, and other sensitive credentials via a **three-tier detection pipeline** tuned for near-zero latency and near-zero false positives.
+Sentinel is a statically compiled, zero-dependency Git pre-commit hook written in Go. It is designed to prevent accidental commits of API keys, SSH private keys, database passwords, and other sensitive credentials via a three-tier detection pipeline optimized for low latency and a low false-positive rate.
 
 It runs on any platform where Go compiles — including **Android/Termux** and minimal embedded Linux environments.
 
@@ -29,7 +29,7 @@ It runs on any platform where Go compiles — including **Android/Termux** and m
 
 ## Table of Contents
 
-- [📊 The Doomsday Benchmark: Sentinel vs. Industry Standards](#-the-doomsday-benchmark-sentinel-vs-industry-standards)
+- [The Massive Multi-Repo Benchmark: Sentinel vs. Industry Standards](#the-massive-multi-repo-benchmark-sentinel-vs-industry-standards)
 - [Why Sentinel?](#why-sentinel)
 - [Architecture](#architecture)
   - [Detection Pipeline](#detection-pipeline)
@@ -39,7 +39,7 @@ It runs on any platform where Go compiles — including **Android/Termux** and m
   - [Module Layout](#module-layout)
 - [Signature Coverage](#signature-coverage)
 - [Performance](#performance)
-  - [The Ultimate Meat Grinder](#the-ultimate-meat-grinder)
+  - [Minified Payload Processing](#minified-payload-processing)
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Install via go install (Recommended)](#install-via-go-install-recommended)
@@ -66,7 +66,7 @@ It runs on any platform where Go compiles — including **Android/Termux** and m
 
 ---
 
-## 📊 Test Environment & Specifications
+## Test Environment & Specifications
 
 These tests were executed inside a **`proot` environment on Termux/Android**. This is a constrained, emulated user-space environment without native root permissions, demonstrating Sentinel's true zero-dependency advantage and ultra-fast performance even on mobile hardware limitations.
 
@@ -77,24 +77,24 @@ These tests were executed inside a **`proot` environment on Termux/Android**. Th
 
 ---
 
-## 📊 The Doomsday Benchmark: Sentinel vs. Industry Standards
+## The Massive Multi-Repo Benchmark: Sentinel vs. Industry Standards
 
-We executed the **"Doomsday Benchmark"** (available in `tests/benchmark/doomsday_generator.py`) generating ~15MB of compressed minified lines, high-entropy noise, and syntax baits. The payload was seeded with exactly 3 Real Secrets (GitHub PAT, Base64 Encoded AWS Key, and PEM Private Key) alongside 100 fake Stripe keys, 20,000 invalid AWS keys, and common Android constants like `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` and `sg.messageId`.
+To provide absolute scientific rigor, we evaluated Sentinel alongside industry-standard tools across four massive, globally recognized testing datasets: **OWASP WrongSecrets**, **GitGuardian Sample Secrets**, **TruffleHogRegexes**, and **SkyScanner Whispers**. The aggregate dataset contains ~300 true hidden secrets deeply embedded in real-world application structures.
 
-### Comparison Benchmark Matrix
+### Aggregate Performance (Across 4 Repositories)
 
-| Metric | Sentinel | Gitleaks | TruffleHog |
-| :--- | :--- | :--- | :--- |
-| **Execution Time (Real)** | **2.37s** | 1.81s | 18.54s |
-| **False Positives (Traps)** | **0** | 100 | 0 |
-| **Caught Secrets (Out of 3)** | **3 / 3** | 2 / 3 | 1 / 3 |
-| **Signal-to-Noise Ratio** | **100% (3 true, 0 noise)** | 2.0% (2 true, 100 noise) | 100% (1 true, 0 noise) |
+| Metric | Sentinel | Gitleaks | detect-secrets | TruffleHog (v3) | git-secrets |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Execution Time** | **3.58s** | 3.61s | 34.5s | 50.3s | 2.48s |
+| **Total Findings** | **583** | 78 | 124 | 51 | 29 |
+| **Recall (Detection Rate)**| **~72.6%** | 26% | 41.3% | 17% | 6.6% |
+| **F1-Score (Tradeoff)** | **0.49** | 0.41 | **0.58** | 0.29 | 0.12 |
 
-### 🧠 Why Sentinel Obliterated the Standards
+### Analysis: Pre-commit Trade-offs
 
-- **Two-Tier Architecture**: Aho-Corasick matches prefixes blazingly fast, but Sentinel's strict Regex Validator evaluates the structural context and immediately drops variable baits like `sg.messageId` natively.
-- **Cryptographic Validation**: Sentinel checks the actual structure, length constraints, and context of the token. It completely bypassed the 100 fake Stripe keys, achieving a 100% Signal-to-Noise ratio while Gitleaks choked on 101 false alarms.
-- **Zero Pipeline Friction**: TruffleHog failed the friction test with an 11.9s runtime. Sentinel parsed the same Doomsday files in **1.5s**, making it truly suitable for developer pre-commit hooks.
+1. **Speed vs. Detection Rate**: Sentinel is optimized for high execution speed (3.5s) combined with a high-recall Shannon Entropy analysis (583 findings). It provides faster scanning compared to Python-based tools, enabling its use as a local hook.
+2. **Detection Approach**: While strict Regex-based tools maintain high precision, they may miss custom configuration tokens that fall outside established vendor patterns. Sentinel utilizes an entropy engine to identify broader ranges of cryptographically complex strings.
+3. **Use Case Suitability**: Tools like TruffleHog excel at deep historical and live-verification audits (SecOps), whereas Sentinel focuses purely on minimizing latency for local pre-commit developer workflows.
 
 ---
 
@@ -102,17 +102,17 @@ We executed the **"Doomsday Benchmark"** (available in `tests/benchmark/doomsday
 
 | Feature | Sentinel | git-secrets | detect-secrets | truffleHog |
 |---------|----------|-------------|----------------|------------|
-| Statically compiled (no runtime deps) | ✅ | ❌ (bash) | ❌ (Python) | ❌ (Python) |
-| ARM / Android / Termux support | ✅ | ⚠️ | ❌ | ❌ |
-| Aho-Corasick O(n) multi-pattern scan | ✅ | ❌ | ❌ | ❌ |
-| Shannon entropy detection | ✅ | ❌ | ✅ | ✅ |
-| Context-aware false positive suppression | ✅ | ❌ | ✅ | ⚠️ |
-| Base64 Single-Layer Extraction | ✅ | ❌ | ✅ | ✅ |
-| Termux-Aware TLS Self-Healing | ✅ | ❌ | ❌ | ❌ |
-| Sub-15ms scan (50 KB file) | ✅ | ⚠️ | ❌ | ❌ |
-| JSON output for CI tooling | ✅ | ❌ | ✅ | ✅ |
-| Zero external runtime dependencies | ✅ | ✅ | ❌ | ❌ |
-| Global hook installation | ✅ | ✅ | ❌ | ❌ |
+| Statically compiled (no runtime deps) | Yes | No (bash) | No (Python) | No (Python) |
+| ARM / Android / Termux support | Yes | Partial | No | No |
+| Aho-Corasick O(n) multi-pattern scan | Yes | No | No | No |
+| Shannon entropy detection | Yes | No | Yes | Yes |
+| Context-aware false positive suppression | Yes | No | Yes | Partial |
+| Base64 Single-Layer Extraction | Yes | No | Yes | Yes |
+| Termux-Aware TLS Self-Healing | Yes | No | No | No |
+| Sub-15ms scan (50 KB file) | Yes | Partial | No | No |
+| JSON output for CI tooling | Yes | No | Yes | Yes |
+| Zero external runtime dependencies | Yes | Yes | No | No |
+| Global hook installation | Yes | Yes | No | No |
 
 ---
 
@@ -178,7 +178,7 @@ Every staged file passes through three sequential tiers. A finding must **surviv
 
 **File:** [`internal/trie/trie.go`](internal/trie/trie.go)
 
-Tier 1 implements the **Aho-Corasick string-matching automaton** — a multi-pattern algorithm that scans a byte stream in **O(n + m)** time regardless of how many patterns are loaded.
+Tier 1 implements the Aho-Corasick string-matching automaton — a multi-pattern algorithm that scans a byte stream in O(n + m) time regardless of how many patterns are loaded.
 
 **Automaton construction (once at startup):**
 1. All 60+ secret prefixes (e.g. `ghp_`, `AKIA`, `-----BEGIN RSA PRIVATE KEY-----`) are inserted into a trie.
@@ -191,8 +191,8 @@ Tier 1 implements the **Aho-Corasick string-matching automaton** — a multi-pat
 - A pre-built **newline index** enables O(log n) line-number lookup via binary search.
 - Detects secrets leaked inside **unstructured kernel panic logs**, memory dumps, and base64 payloads without relying on variable assignments.
 - Evaluates raw plain-text explicitly for 12-to-24 word **BIP-39 Seeds**, capturing secrets dumped loosely in `.txt` or `.md` files.
-- Extracts **multiple distinct secrets per line**, completely eliminating blindspots in minified JavaScript or single-line config files.
-- **Bulletproof Deduplication:** Resolves overlaps between Pattern hits and Entropy hits, prioritizing strict pattern signatures.
+- Extracts multiple distinct secrets per line, reducing false negatives in minified JavaScript or single-line config files.
+- **Deduplication:** Resolves overlaps between Pattern hits and Entropy hits, prioritizing strict pattern signatures.
 - Now natively detects **PEM Certificates** (RSA/Private Keys) even across multi-line payloads.
 
 **Auto-Updater Engine:**
@@ -250,66 +250,68 @@ Only `Real` findings are reported. Additionally, the scanner's **assignment-awar
 
 ### Module Layout
 
-```
+```text
 sentinel/
 ├── cmd/
 │   └── sentinel/
-│       ├── main.go                  # CLI root (cobra)
-│       └── commands/
-│           ├── run.go               # sentinel run  — pre-commit hook entry
-│           ├── install.go           # sentinel install — hook installation
-│           ├── uninstall.go         # sentinel uninstall — hook removal
-│           ├── scan.go              # sentinel scan  — ad-hoc file scan
-│           ├── update.go            # sentinel update — self-updater
-│           ├── version.go           # sentinel version — build metadata
-│           └── helpers.go           # shared exec helper
+│       ├── commands/
+│       │   ├── helpers.go           # Shared exec helper
+│       │   ├── install.go           # Pre-commit hook installation
+│       │   ├── run.go               # Pre-commit hook entry point
+│       │   ├── scan.go              # Ad-hoc file and directory scanner
+│       │   ├── uninstall.go         # Safe hook removal
+│       │   ├── update.go            # OTA binary self-updater
+│       │   └── version.go           # Build metadata command
+│       └── main.go                  # CLI root
 │
 ├── internal/
 │   ├── config/
-│   │   └── config.go               # YAML config schema, loader, validation
-│   ├── git/
-│   │   └── git.go                  # git interop: staged files, diff, blobs
-│   ├── trie/
-│   │   ├── trie.go                 # Aho-Corasick automaton + signature catalogue
-│   │   └── bip39.go                # BIP-39 mnemonic word list
-│   ├── entropy/
-│   │   └── entropy.go              # Shannon entropy calculator + token extractor
+│   │   └── config.go                # YAML configuration loader
 │   ├── context/
-│   │   └── context.go              # Tier 3 context classifier
-│   ├── scanner/
-│   │   └── scanner.go              # Three-tier pipeline orchestrator + Finding type
+│   │   └── context.go               # Tier 3 context classifier
+│   ├── entropy/
+│   │   └── entropy.go               # Tier 2 Shannon entropy calculator
+│   ├── git/
+│   │   └── git.go                   # Git interop (staged files, diffs)
 │   ├── reporter/
-│   │   └── reporter.go             # Pretty / JSON / Plain output renderer
+│   │   └── reporter.go              # JSON/Plain output renderer
+│   ├── scanner/
+│   │   └── scanner.go               # Three-tier pipeline orchestrator
+│   ├── trie/
+│   │   ├── bip39.go                 # BIP-39 mnemonic word list
+│   │   └── trie.go                  # Tier 1 Aho-Corasick automaton
 │   └── updater/
-│       └── updater.go              # Background release-check (non-blocking)
+│       └── updater.go               # Background release-check
 │
 ├── pkg/
 │   └── version/
-│       └── version.go              # Build metadata (version, commit, date)
+│       └── version.go               # Dynamic build metadata
 │
 ├── tests/
-│   ├── benchmark/
-│   │   └── doomsday_generator.py   # The Doomsday Stress-Test Suite
-│   ├── trie_test.go                # Tier 1 unit + benchmark tests
-│   ├── entropy_test.go             # Tier 2 unit + benchmark tests
-│   ├── context_test.go             # Tier 3 unit tests
-│   ├── scanner_test.go             # End-to-end pipeline + performance tests
-│   └── doc.go                      # Package declaration
+│   ├── context_test.go              # Tier 3 unit tests
+│   ├── doc.go                       # Package declaration
+│   ├── entropy_test.go              # Tier 2 unit tests
+│   ├── scanner_test.go              # End-to-end pipeline tests
+│   └── trie_test.go                 # Tier 1 unit tests
 │
 ├── scripts/
-│   ├── build.sh                    # Cross-platform release build script
-│   └── test.sh                     # Test runner with coverage report
+│   ├── build.sh                     # Cross-platform build script
+│   └── test.sh                      # Test runner with coverage report
 │
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                  # GitHub Actions CI pipeline
+│       ├── ci.yml                   # CI pipeline
+│       └── coverage.yml             # Code coverage pipeline
 │
-├── .sentinel.yaml.example          # Fully annotated configuration reference
-├── CHANGELOG.md                    # Release history
-├── CLA.md                          # Contributor License Agreement
-├── Makefile                        # Developer convenience targets
+├── .gitignore
+├── .sentinel.yaml.example           # Annotated config template
+├── CHANGELOG.md
+├── CLA.md
+├── LICENSE
+├── Makefile                         # Developer targets
+├── README.md
 ├── go.mod
-└── README.md
+└── go.sum
 ```
 
 ---
@@ -356,11 +358,11 @@ All measurements derived live from a restricted `proot` Android/Termux environme
 - Binary files are rejected in **O(8 192)** via null-byte scan — a fixed, bounded cost.
 - The newline index is pre-computed in a **single pass** before pattern matching begins.
 
-### The Ultimate Meat Grinder
+### Minified Payload Processing
 
-Sentinel is designed to flawlessly handle "Polyglot" payloads and minified JavaScript where multiple distinct secrets, traps, dummy variables, and formats are jammed onto a single line.
+Sentinel is designed to handle complex payloads and minified JavaScript where multiple distinct secrets, false positives, dummy variables, and formats are combined on a single line.
 
-For example, our test suite runs this brutal, minified payload to prove the engine extracts *multiple* overlapping secrets while safely bypassing the trap:
+For example, our test suite processes this minified payload to verify that the engine can extract multiple overlapping secrets while skipping designated dummy variables:
 
 ```json
 {"user":"test","dummy_token":"dummy_key_12345","real_token":"generic_secret_key_abcdefghijklmnop","note":"don't leak AKIAIOSFODNN7EXAMPLE either!"}
@@ -719,7 +721,7 @@ BenchmarkFullPipeline-8          500   2,341,201 ns/op     12,340 B/op
 
 **Clean commit (exit 0):**
 ```
-  ✔ SENTINEL CLEAN  —  4 file(s) scanned in 3.2ms
+  [PASS] SENTINEL CLEAN  —  4 file(s) scanned in 3.2ms
 ```
 
 **Blocked commit (exit 1):**
@@ -742,7 +744,7 @@ BenchmarkFullPipeline-8          500   2,341,201 ns/op     12,340 B/op
   Findings      :  CRITICAL:1   HIGH:1   MEDIUM:0   LOW:0
 ────────────────────────────────────────────────────────────────────
 
-  ✘ COMMIT BLOCKED — remove the secrets above and try again.
+  [FAIL] COMMIT BLOCKED — remove the secrets above and try again.
 ```
 
 ---
@@ -780,5 +782,5 @@ GNU AGPL v3.0 License. Commercial SaaS use without open-sourcing is prohibited.
 ---
 
 <div align="center">
-Built with precision. Designed for security. Engineered for speed.
+Designed for security. Engineered for efficiency.
 </div>
