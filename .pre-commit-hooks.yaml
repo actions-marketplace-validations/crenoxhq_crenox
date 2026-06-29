@@ -1,0 +1,6 @@
+- id: sentinel
+  name: Sentinel Secret Scanner
+  description: A zero-dependency git pre-commit hook to detect secrets.
+  entry: sentinel scan
+  language: golang
+  types: [text]
