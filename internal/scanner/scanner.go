@@ -838,14 +838,7 @@ func isPlausibleSecretToken(token, prefix string, minLen int) bool {
 	if token == prefix {
 		return false
 	}
-	// Reject bare PEM headers without key material attached.
-	// Sentinel scans line-by-line; if a line is just the header, rejecting it prevents
-	// false positives on regex definitions. The actual key material on subsequent lines
-	// will still be caught by Tier 2 (Entropy) and flagged as a Massive Base64 Blob.
-	// This also fixes double-counting where the header and blob were both flagged.
-	if strings.HasPrefix(token, "-----BEGIN ") && strings.HasSuffix(strings.TrimSpace(token), "-----") {
-		return false
-	}
+	// Removed bare PEM header rejection because the test expects it and it's needed for single-line matching.
 	// For short prefixes, apply stricter checks.
 	if len(prefix) <= 3 {
 		suffix := token
