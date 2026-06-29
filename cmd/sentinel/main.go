@@ -44,6 +44,9 @@ and other sensitive data using a three-tier detection pipeline:
   Tier 1 (PATTERN)  — Aho-Corasick trie matching of 60+ known secret signatures
   Tier 2 (ENTROPY)  — Shannon entropy analysis for unknown/novel secrets
   Tier 3 (CONTEXT)  — Context-aware false-positive suppression
+  
+  Inline Suppression — Append '// sentinel:ignore' to the preceding line to ignore false positives.
+  Framework Support  — Compatible with the Python 'pre-commit' ecosystem.
 
 CLI Commands & Flags:
 

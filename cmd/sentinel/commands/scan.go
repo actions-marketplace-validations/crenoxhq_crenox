@@ -34,6 +34,8 @@ func NewScanCmd() *cobra.Command {
 		Long: `Scan lets you run Sentinel against arbitrary files or directories,
 independent of git staging.  Useful for auditing existing codebases.
 
+You can bypass false positives by adding '// sentinel:ignore' to the preceding line.
+
 Examples:
   sentinel scan ./src
   sentinel scan config.yaml secrets.env

@@ -30,9 +30,11 @@ func NewRunCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run the pre-commit security scan (called by git hook)",
-		Long: `Run is invoked automatically by git when you execute 'git commit'.
+		Long: `Run is invoked automatically by git when you execute 'git commit' or by the pre-commit framework.
 It scans all staged changes for secrets using the three-tier detection pipeline.
-Exit code 0 means clean. Exit code 1 blocks the commit.`,
+Exit code 0 means clean. Exit code 1 blocks the commit.
+
+You can bypass false positives by adding '// sentinel:ignore' to the preceding line.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runScan(configPath, format, failFast, verbose)
 		},

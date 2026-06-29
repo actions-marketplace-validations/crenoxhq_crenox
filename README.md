@@ -585,7 +585,19 @@ exclude_extensions:
 
 ## Usage
 
-### Pre-commit Hook
+### Native `pre-commit` Framework Hook
+
+Sentinel fully supports the Python `pre-commit` ecosystem. Add this to your `.pre-commit-config.yaml` to enforce scanning across your entire team automatically:
+
+```yaml
+repos:
+  - repo: https://github.com/sentinel-cli/sentinel
+    rev: v2.0.1
+    hooks:
+      - id: sentinel
+```
+
+### Git Native Hook
 
 After running `sentinel install`, the hook fires automatically on every `git commit`:
 
@@ -786,8 +798,9 @@ Sentinel's Tier 3 context filter eliminates false positives automatically. The s
 
 If a false positive persists:
 
-1. **Check the file type** — move test data to files matching `*_test.go`, `tests/`, or `testdata/`.
-2. **Use a placeholder variable name** — `dummy_key`, `fake_token`, `mock_secret`, etc. are automatically suppressed by Tier 3.
+1. **Inline Suppression** — Add a `// sentinel:ignore` comment on the preceding line or at the end of the line. Sentinel will completely bypass the flagged string.
+2. **Check the file type** — move test data to files matching `*_test.go`, `tests/`, or `testdata/`.
+3. **Use a placeholder variable name** — `dummy_key`, `fake_token`, `mock_secret`, etc. are automatically suppressed by Tier 3.
 3. **Use an env-var reference** — `token: ${MY_TOKEN}` or `token: $MY_TOKEN` are recognized as safe placeholders.
 4. **Add the path to `exclude_paths`** in `.sentinel.yaml`.
 5. **Raise `entropy_threshold`** slightly (e.g., `3.8`) if your codebase has many high-entropy non-secret identifiers.
