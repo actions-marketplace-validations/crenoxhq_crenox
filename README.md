@@ -29,7 +29,7 @@ It runs on any platform where Go compiles — including **Android/Termux** and m
 
 ## Table of Contents
 
-- [The Massive Multi-Repo Benchmark: Sentinel vs. Industry Standards](#the-massive-multi-repo-benchmark-sentinel-vs-industry-standards)
+- [Performance and Benchmarking Analysis](#performance-and-benchmarking-analysis)
 - [Why Sentinel?](#why-sentinel)
 - [Architecture](#architecture)
   - [Detection Pipeline](#detection-pipeline)
@@ -71,13 +71,7 @@ It runs on any platform where Go compiles — including **Android/Termux** and m
 
 Here are the empirically gathered, real-world benchmark results against the requested repositories.
 
-### Key Takeaways
-* **Unmatched Speed:** `Sentinel v2.0.3` is significantly faster than competitors across the board (often 10x-50x faster in Standard Mode) and maintains an incredibly low memory footprint (<13MB in Standard Mode).
-* **Highest Detection Yield:** Sentinel consistently identified the largest number of total findings, proving its efficacy, particularly during deep Git history scans (2,421 findings on `WrongSecrets`). 
-* **Resource Efficiency:** While tools like TruffleHog and Gitleaks consume upwards of 300MB of RAM during history scans, Sentinel operates far more efficiently.
-* **Limitations of Automation:** *Because these are intentional benchmark repositories saturated with dummy secrets, all raw detections are mapped to "True Findings" for this automated benchmark. False Positives (FPs) require manual human review against a known ground-truth dataset.*
 
-***
 
 ### 1. Standard Mode (Filesystem Only)
 
