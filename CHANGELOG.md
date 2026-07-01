@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3-hotfix] - 2026-07-01
+
+### Fixed
+- **Allowlist Patterns Implementation:** Fixed an issue where the `allowlist_patterns` configuration was parsed but not passed into the core scanning engine. Custom ignore patterns now correctly bypass findings during scans.
+- **Documentation Unification:** Unified conflicting `sentinel:ignore` wording across CLI outputs and `README.md` to accurately reflect that suppression tags can be placed on the preceding line or at the end of the line.
+- **Configuration Defaults:** Unified the `exclude_paths` and `exclude_extensions` documentation in the README so that both the reference section and the examples section match the built-in defaults.
+
 ## [2.0.3] - 2026-06-30
 
 ### Added
