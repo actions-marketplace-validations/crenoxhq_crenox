@@ -26,3 +26,11 @@ Thumbs.db
 # Sensitive config (never commit real credentials)
 .sentinel.yaml
 !.sentinel.yaml.example
+
+# Agent instruction cache & lockfiles
+.agents/
+skills-lock.json
+
+# Cloned local repositories
+nexusfi-web/
+

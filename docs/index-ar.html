@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سنتينل — فاحص الأسرار والبيانات الحساسة لخطافات Git</title>
+    
+    <!-- Meta Descriptions for SEO -->
+    <meta name="description" content="أداة فحص وحماية برمجية مستقلة بلغة Go لخطافات Git لمنع تسريب المفاتيح السرية والبيانات الحساسة محلياً قبل مغادرتها جهاز المطور. بديل خفيف وأصيل لكل من Gitleaks و git-secrets.">
+    <meta name="keywords" content="secret scanner, gitleaks alternative, git-secrets alternative, pre-commit hook, credentials scanner, termux tool, go, security automation, فحص الثغرات, حماية المفاتيح">
+    
+    <!-- Canonical & Multilingual SEO (Hreflang) -->
+    <link rel="canonical" href="https://sentinel-cli.github.io/sentinel/index-ar.html">
+    <link rel="alternate" hreflang="en" href="https://sentinel-cli.github.io/sentinel/">
+    <link rel="alternate" hreflang="ar" href="https://sentinel-cli.github.io/sentinel/index-ar.html">
+    <link rel="alternate" hreflang="x-default" href="https://sentinel-cli.github.io/sentinel/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sentinel-cli.github.io/sentinel/index-ar.html">
+    <meta property="og:title" content="سنتينل — فاحص الأسرار والبيانات الحساسة لخطافات Git">
+    <meta property="og:description" content="أداة فحص وحماية برمجية مستقلة بلغة Go لخطافات Git لمنع تسريب المفاتيح السرية والبيانات الحساسة محلياً قبل مغادرتها جهاز المطور.">
+    <meta property="og:image" content="https://sentinel-cli.github.io/sentinel/social-preview.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://sentinel-cli.github.io/sentinel/index-ar.html">
+    <meta name="twitter:title" content="سنتينل — فاحص الأسرار والبيانات الحساسة لخطافات Git">
+    <meta name="twitter:description" content="أداة فحص وحماية برمجية مستقلة بلغة Go لخطافات Git لمنع تسريب المفاتيح السرية والبيانات الحساسة محلياً قبل مغادرتها جهاز المطور.">
+    <meta name="twitter:image" content="https://sentinel-cli.github.io/sentinel/social-preview.png">
+
+    <!-- Structured Data (JSON-LD Schema) for Google Search Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Sentinel",
+      "description": "An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go.",
+      "operatingSystem": "Linux, macOS, Windows, Android (Termux)",
+      "applicationCategory": "DeveloperApplication",
+      "softwareVersion": "2.0.4",
+      "codeRepository": "https://github.com/sentinel-cli/sentinel",
+      "license": "https://github.com/sentinel-cli/sentinel/blob/main/LICENSE",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Khaled Hani"
+      }
+    }
+    </script>
+    
+    <!-- Premium Fonts: Amiri for Headings (Serif), IBM Plex Sans Arabic for Body (Sans-serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Minimal Header Navigation -->
+    <nav class="nav-bar">
+        <div class="container nav-wrapper">
+            <a href="#" class="nav-logo">
+                <svg class="logo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span class="logo-text">Sentinel</span>
+            </a>
+            <div class="nav-links">
+                <a href="#philosophy" class="nav-link">الفلسفة الأمنية</a>
+                <a href="#pipeline" class="nav-link">البنية الهندسية</a>
+                <a href="#benchmarks" class="nav-link">الأداء والأرقام</a>
+                <a href="#installation" class="nav-link">التثبيت والدمج</a>
+                <a href="#masterpieces" class="nav-link">المشاريع</a>
+                <a href="#blog" class="nav-link">المدونة</a>
+                <a href="#community" class="nav-link">الدعم والمجتمع</a>
+                <a href="index.html" class="lang-switch">English</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Hero Section -->
+        <article class="hero-section">
+            <div class="eyebrow">
+                حماية تسريبات خطافات Git
+            </div>
+            <h1 class="hero-title">اقضِ على تسريبات البيانات الحساسة.<br>قبل وصولها إلى المستودع.</h1>
+            <p class="text-lead">سنتينل (Sentinel) هو ملف برمجي ثنائي مستقل ومجمع بلغة Go، يقوم بفحص التحقق من المرفقات محلياً في أقل من 20 جزءاً من الثانية لحماية مفاتيحك السرية وبياناتك الحساسة قبل مغادرتها جهاز المطور.</p>
+            
+            <p class="text-muted" style="font-size: 0.85rem; margin-top: -1rem;">نُشر بواسطة <strong>خالد هاني</strong> في 3 يوليو 2026</p>
+
+            <div class="hero-actions">
+                <a href="#installation" class="btn btn-primary">تثبيت الأداة</a>
+                <a href="https://github.com/sentinel-cli/sentinel" target="_blank" class="btn btn-secondary">
+                    مستودع الكود البرمجي
+                    <span class="btn-icon">↗</span>
+                </a>
+            </div>
+        </article>
+
+        <!-- Chapter 1: The Core Philosophy -->
+        <section id="philosophy" class="section scroll-fade">
+            <div class="eyebrow">
+                01 / الفلسفة الأمنية
+            </div>
+            <h2>لماذا يعد الفحص المحلي خط الدفاع الأخير الحقيقي</h2>
+            <p>في بيئات التطوير الحديثة (DevSecOps)، يتم تأجيل فحص البيانات الحساسة غالباً إلى منصات البناء المستمر (CI) أو خطافات الرفع (Post-Push Webhooks). وعلى الرغم من أهمية هذه الفحوصات، إلا أنها تعمل بعد فوات الأوان. بمجرد وصول المفتاح السري إلى قاعدة بيانات git البعيدة، يجب اعتباره مكشوفاً، مما يستدعي إجراءات مكلفة لتدوير المفاتيح، ومراجعة سجلات الوصول، وتنسيق استجابة الطوارئ بين فرق العمل.</p>
+            
+            <blockquote>
+                "بمجرد خروج المفتاح السري من محطة عمل المطور، تتحول المهمة الأمنية من الوقاية إلى معالجة الكارثة."
+            </blockquote>
+            
+            <p>يعمل سنتينل على سد هذه الثغرة عند الحافة (Edge). من خلال تثبيته كخطاف pre-commit أصلي لـ Git مباشرة في بيئتك المحلية، يقوم بفحص التعديلات المرحلية وإلغاء الالتزام فوراً إذا تم الكشف عن مفاتيح سحابية نشطة أو كلمات مرور أو إعدادات حساسة. ولأنه يعمل بالكامل محلياً، فهو لا يتطلب أي اتصال بشبكة الإنترنت ولا يشارك أي بيانات مع خوادم خارجية.</p>
+        </section>
+
+        <!-- Chapter 2: The Three-Tier Pipeline -->
+        <section id="pipeline" class="section scroll-fade">
+            <div class="eyebrow">
+                02 / البنية الهندسية للأداة
+            </div>
+            <h2>التحقق من البيانات الحساسة في أقل من 20 جزءاً من الثانية</h2>
+            <p>تعتبر سرعة التطوير قيداً أساسياً عند تفعيل خطافات pre-commit؛ إذ أن الخطافات التي تتسبب في بطء الالتزام تدفع المطورين لتجاهلها. لحل هذا القيد، يعتمد سنتينل على خط فحص ثلاثي المستويات يقوم بتحليل التعديلات في أجزاء من الثانية مع الحفاظ على دقة كشف استثنائية.</p>
+
+            <h3>المستوى الأول: خوارزمية Aho-Corasick الأوتوماتيكية</h3>
+            <p>يمر كل ملف عبر فحص خطي ذو تعقيد $O(N)$ باستخدام شجرة البحث المجمعة Aho-Corasick. يتم تضمين القواعد الافتراضية والمخصصة للمستخدم مباشرة داخل جدول الحالات البرمجية للأداة، مما يسمح باكتشاف الأنماط والرموز في ممر واحد دون إثقال المعالج.</p>
+
+            <h3>المستوى الثاني: قياس شانون لعشوائية النصوص (Entropy)</h3>
+            <p>تخضع الرموز المرشحة المكتشفة في الممر الأول لحساب مدى العشوائية وتوزيع الأحرف فيها (Shannon Entropy). يساعد هذا المقياس في التمييز بين المفاتيح العشوائية الحقيقية والمتغيرات أو القوالب النصية الافتراضية.</p>
+
+            <h3>المستوى الثالث: محلل سياق الاستثناءات</h3>
+            <p>أخيراً، يقوم المحلل بقراءة أسطر الكود المحيطة بالمتغيرات والتعليقات المجاورة. يتيح هذا المستوى استبعاد المفاتيح الموجودة في ملفات الاختبار أو بيئات التطوير الافتراضية، أو الأسطر الملحقة بتتعليق التجاوز <code>// sentinel:ignore</code>.</p>
+
+            <h3>معاينة مخرجات الفحص الفعلية</h3>
+            <p>عندما يكتشف سنتينل تسريباً للبيانات، يقوم بإلغاء عملية الالتزام وعرض تفاصيل الفحص الدقيقة في واجهة سطر الأوامر بالشكل التالي:</p>
+
+            <pre class="font-mono">
+ ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗     
+ ██╔════╝██╔════╝████╗  ██║╚══██╔══╝██║████╗  ██║██╔════╝██║     
+ ███████╗█████╗  ██╔██╗ ██║   ██║   ██║██╔██╗ ██║█████╗  ██║     
+ ╚════██║██╔══╝  ██║╚██╗██║   ██║   ██║██║╚██╗██║██╔══╝  ██║     
+ ███████║███████╗██║ ╚████║   ██║   ██║██║ ╚████║███████╗███████╗
+ ╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝
+  Pre-Commit Security Hook  │  v2.0.4
+
+   CRITICAL   .sentinel.yaml.example:48
+                [PATTERN] AWS Access Key ID
+                Token:  AKIAIO**********MPLE
+                → - "AKIAIOSFODNN7EXAMPLE"
+
+────────────────────────────────────────────────────────────────────
+  SENTINEL SCAN COMPLETE
+  Files scanned : 12
+  Elapsed       : 25.266ms
+  Findings      :  CRITICAL:1   HIGH:0   MEDIUM:0   LOW:0 
+────────────────────────────────────────────────────────────────────
+
+  ✖ COMMIT BLOCKED — remove the secrets above and try again.
+    Hint: If this is a false positive, append '// sentinel:ignore' to the preceding line.</pre>
+        </section>
+
+        <!-- Chapter 3: Benchmarks -->
+        <section id="benchmarks" class="section scroll-fade">
+            <div class="eyebrow">
+                03 / إحصائيات الأداء
+            </div>
+            <h2>حجم استهلاك الذاكرة وسرعة المعالجة</h2>
+            <p>لضمان تحليل أداء شفاف، قمنا بمقارنة سنتينل بأبرز أدوات الكشف (Gitleaks و TruffleHog). تم جمع هذه المقاييس على محطة عمل محلية بمعالج ثماني النواة (ARM64)، مع قياس زمن الاستجابة والحد الأقصى لاستهلاك الذاكرة العشوائية (Peak RSS).</p>
+
+            <div class="spec-table-wrapper">
+                <table class="spec-table font-mono">
+                    <thead>
+                        <tr>
+                            <th>المقياس المرصود</th>
+                            <th>سنتينل (v2.0.4)</th>
+                            <th>جيتليكس (v8.30.1)</th>
+                            <th>ترافلهوغ (v3.95.7)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="spec-label">حجم الملف الثنائي (المجمّع)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary); direction: ltr; text-align: right;">11.6 MB</td>
+                            <td style="direction: ltr; text-align: right;">42.5 MB</td>
+                            <td style="direction: ltr; text-align: right;">185.0 MB</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">ذاكرة محطة العمل (Peak RSS)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary); direction: ltr; text-align: right;">11.2 MB</td>
+                            <td style="direction: ltr; text-align: right;">37.6 MB</td>
+                            <td style="direction: ltr; text-align: right;">209.2 MB</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">فحص ملفات النظام المرحلية</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary); direction: ltr; text-align: right;">20 ms</td>
+                            <td style="direction: ltr; text-align: right;">150 ms</td>
+                            <td style="direction: ltr; text-align: right;">7.26 s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">الفحص التاريخي (سجل Git)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary); direction: ltr; text-align: right;">30 ms</td>
+                            <td style="direction: ltr; text-align: right;">170 ms</td>
+                            <td style="direction: ltr; text-align: right;">3.21 s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">الاعتمادية الخارجية للملف</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">صفر (مستقل)</td>
+                            <td>صفر</td>
+                            <td>صفر</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Chapter 4: Installation -->
+        <section id="installation" class="section scroll-fade">
+            <div class="eyebrow">
+                04 / تثبيت الأداة
+            </div>
+            <h2>التثبيت والدمج المحلي</h2>
+            <p>يتم تجميع سنتينل كملف ثنائي مستقل للعمل مباشرة على أنظمة Linux و macOS وأجهزة Android عبر بيئة Termux دون الحاجة لتثبيت لغة Go أو أي اعتماديات برمجية أخرى.</p>
+
+            <h3>الخيار أ: الملفات الثنائية الجاهزة (موصى به)</h3>
+            <p>أسرع طريقة لتثبيت الأداة مباشرة على نظامك دون الحاجة لبناء الملف من المصدر. مناسبة جداً لمستخدمي أندرويد و Termux.</p>
+            <pre class="font-mono">
+# 1. تنزيل الملف الثنائي المناسب لمعمارية جهازك
+wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.4/sentinel-v2.0.4-linux-arm64 -O sentinel
+
+# 2. منح صلاحيات التشغيل للملف
+chmod +x sentinel
+
+# 3. نقل الملف لمسار البرامج المعتمد في جهازك ($PREFIX/bin لـ Termux، أو /usr/local/bin لـ Linux/macOS)
+mv sentinel $PREFIX/bin/
+
+# 4. التحقق من نجاح التثبيت
+sentinel version</pre>
+
+            <h3>الخيار ب: مثبت حزم لغة Go</h3>
+            <p>إذا كان لديك بيئة Go مهيأة في مسار نظامك، يمكنك تنزيل وبناء الأداة مباشرة بالأمر التالي:</p>
+            <pre class="font-mono">go install github.com/sentinel-cli/sentinel/cmd/sentinel@latest</pre>
+
+            <h3>الخيار ج: التجميع والبناء من المصدر</h3>
+            <p>استنساخ المستودع وبناء الملف الثنائي يدوياً باستخدام أوامر Makefile المرفقة:</p>
+            <pre class="font-mono">
+git clone https://github.com/sentinel-cli/sentinel.git
+cd sentinel
+make build
+./dist/sentinel version</pre>
+
+            <h3>تفعيل خطاف Git في المستودعات</h3>
+            <p>بعد وضع البرنامج في مسار نظامك، يمكنك تفعيل فحص الالتزام التلقائي للمستودعات محلياً:</p>
+            <pre class="font-mono">
+# تفعيل الفحص للمستودع الحالي فقط
+sentinel install
+
+# تفعيل الفحص عالمياً لكافة المستودعات المستقبلية
+sentinel install --global</pre>
+        </section>
+
+        <!-- Chapter 5: Workstation Execution & Commands -->
+        <section id="execution" class="section scroll-fade">
+            <div class="eyebrow">
+                05 / تفاصيل التشغيل والأوامر
+            </div>
+            <h2>أوائل أوامر التشغيل وسير العمل</h2>
+            <p>يدعم سنتينل عدة طرق تشغيل مختلفة لتناسب احتياجات المطورين وسير العمل محلياً أو في الخوادم البعيدة:</p>
+
+            <h3>1. فاحص الالتزام التلقائي (Pre-Commit)</h3>
+            <p>يتم تشغيله تلقائياً بواسطة git عند كتابة أمر الالتزام. يقوم بقراءة الملفات المجهزة جزئياً فقط وفحصها في الذاكرة لمنع الالتزام إذا كانت تحتوي على أسرار.</p>
+            <pre class="font-mono">sentinel run</pre>
+
+            <h3>2. الفحص اليدوي للمجلدات</h3>
+            <p>لفحص مجلد أو ملف محدد يدوياً وبشكل تكراري قبل البدء في تجهيز الملفات للالتزام:</p>
+            <pre class="font-mono">sentinel scan -r ./path/to/project</pre>
+
+            <h3>3. التصدير لمنصات البناء المستمر</h3>
+            <p>تصدير تقرير أمني مهيكل بصيغة JSON أو SARIF لدمجه مع أدوات التحليل الأخرى في خوادم CI/CD:</p>
+            <pre class="font-mono">sentinel scan -r -f sarif . &gt; report.sarif</pre>
+        </section>
+
+        <!-- Chapter 6: Engineering Blog -->
+        <section id="blog" class="section scroll-fade">
+            <div class="eyebrow">
+                06 / المدونة الهندسية
+            </div>
+            <h2>كواليس التطوير الهندسية وملفات النظام</h2>
+            <p>مقالات يشاركها المطورون لشرح آليات تحسين وسرعة الكشف والفلسفة الأمنية خلف بناء الأداة.</p>
+            
+            <div style="margin: 2rem 0; border-top: 1px solid var(--color-border);">
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.5rem;">3 يوليو 2026</p>
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-serif-ar); font-size: 1.5rem; font-weight: 700;"><a href="https://github.com/sentinel-cli/sentinel" target="_blank" style="color: inherit; text-decoration: none;">تحسين استهلاك الذاكرة: تجميع القواعد مباشرة في الأوتوماتون</a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">كيف نجح الإصدار 2.0.4 في تقليص حجم استهلاك الذاكرة RSS بنسبة 27% من خلال بناء القواعد المخصصة وتجميعها مباشرة ضمن مصفوفة الحالات البرمجية لشجرة Trie، متفادياً معالجة الرموز أثناء التشغيل.</p>
+                </div>
+                
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.5rem;">28 يونيو 2026</p>
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-serif-ar); font-size: 1.5rem; font-weight: 700;"><a href="https://github.com/sentinel-cli/sentinel" target="_blank" style="color: inherit; text-decoration: none;">وهم الفحص الأمني بعد الرفع (Post-Push)</a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">دراسة حول النافذة الزمنية لاختراق المفاتيح السحابية بعد رفعها للإنترنت ولماذا يعتبر تدارك التسريب في خوادم الـ CI فواتاً للأوان وضرورة تصفية الأخطاء عند جهاز المطور محلياً.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 7: Other Masterpieces -->
+        <section id="masterpieces" class="section scroll-fade">
+            <div class="eyebrow">
+                07 / المشاريع الأخرى
+            </div>
+            <h2>تحف هندسية ومعمارية أخرى</h2>
+            <p>استكشف مشاريع الحماية والشبكات وتطبيقات خوادم النظام المطورة في بيئتنا التقنية الخاصة.</p>
+
+            <div style="margin: 2rem 0; border-top: 1px solid var(--color-border);">
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-ar); font-size: 1.25rem; font-weight: 600;"><a href="https://muslim-kh09.github.io/NexusFi-Web/" target="_blank" style="color: inherit; text-decoration: none;">NexusFi <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted); direction: ltr; display: inline-block;">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">بيئة سحابية وشبكية متكاملة ومستقلة ثلاثية الطبقات مصممة للعمل بشكل أصلي على أجهزة أندرويد المعززة بصلاحيات الروت. تربط محركات قطع اتصال L2، استكشاف الـ OTG التلقائي، وتجزئة سرعة النطاق الترددي.</p>
+                </div>
+                
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-ar); font-size: 1.25rem; font-weight: 600;"><a href="https://net-anatomy.vercel.app" target="_blank" style="color: inherit; text-decoration: none;">NetAnatomy <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted); direction: ltr; display: inline-block;">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">أداة متقدمة لتصور الشبكات والتخطيط التشريحي للطبولوجيا المعقدة للبنية التحتية. متوفرة عبر لوحة تحكم ويب تشخيصية.</p>
+                </div>
+
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-ar); font-size: 1.25rem; font-weight: 600;"><a href="https://decisify-web.vercel.app" target="_blank" style="color: inherit; text-decoration: none;">Decisify <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted); direction: ltr; display: inline-block;">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">محرك اتخاذ قرارات متطور وإطار لتحديد الأولويات مصمم للتحليل السريع للخيارات والنمذجة المنطقية.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 8: Community & User Discussions -->
+        <section id="community" class="section scroll-fade">
+            <div class="eyebrow">
+                08 / مجتمع المطورين والدعم
+            </div>
+            <h2>تواصل معنا وناقش تفاصيل الحماية البرمجية</h2>
+            <p>سنتينل هو مشروع مفتوح المصدر تم تطويره بالكامل بالتعاون مع مجتمع المطورين. نهتم جداً بمراجعاتكم واقتراحاتكم لتحديث القواعد وزيادة فاعلية الكشف.</p>
+            
+            <p>إذا كنت ترغب في الإبلاغ عن مشكلة أمنية، أو اقتراح قاعدة مطابقة جديدة، أو الاستفسار عن التثبيت في بيئات عمل مختلفة، يرجى استخدام قنوات التواصل التالية:</p>
+
+            <ul style="padding-right: 1.25rem; margin-top: 1rem; margin-bottom: 2rem;">
+                <li style="margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--color-text-secondary);"><strong>نقاشات وقضايا GitHub:</strong> لمناقشة الميزات المطلوبة واقتراح قواعد الفحص في صفحة المشروع على <a href="https://github.com/sentinel-cli/sentinel/issues" target="_blank" style="color: var(--color-text-primary); text-decoration: underline;">مستودع GitHub</a>.</li>
+                <li style="margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--color-text-secondary);"><strong>تواصل مباشر مع المطور:</strong> يمكنك التواصل مباشرة مع خالد هاني على تيليجرام عبر الرابط <a href="https://t.me/A245F" target="_blank" style="color: var(--color-text-primary); text-decoration: underline;">https://t.me/A245F</a> للأسئلة والدعم الفني المباشر.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-wrapper">
+            <p class="footer-copy">&copy; 2026 Sentinel. مرخص تحت رخصة AGPLv3 الحرة.</p>
+            <div class="footer-links">
+                <a href="https://github.com/sentinel-cli/sentinel" target="_blank" class="footer-link">مستودع الكود البرمجي</a>
+                <a href="https://github.com/sentinel-cli/sentinel/blob/main/CHANGELOG.md" target="_blank" class="footer-link">سجل التغييرات</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>

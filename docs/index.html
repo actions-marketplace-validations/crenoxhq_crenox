@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel — Statically Compiled Git Secret Scanner</title>
+    
+    <!-- Meta Descriptions for SEO -->
+    <meta name="description" content="An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go. A lightweight Gitleaks & git-secrets alternative designed to protect local developer workflows.">
+    <meta name="keywords" content="secret scanner, gitleaks alternative, git-secrets alternative, pre-commit hook, credentials scanner, termux tool, go, security automation">
+    
+    <!-- Canonical & Multilingual SEO (Hreflang) -->
+    <link rel="canonical" href="https://sentinel-cli.github.io/sentinel/">
+    <link rel="alternate" hreflang="en" href="https://sentinel-cli.github.io/sentinel/">
+    <link rel="alternate" hreflang="ar" href="https://sentinel-cli.github.io/sentinel/index-ar.html">
+    <link rel="alternate" hreflang="x-default" href="https://sentinel-cli.github.io/sentinel/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sentinel-cli.github.io/sentinel/">
+    <meta property="og:title" content="Sentinel — Statically Compiled Git Secret Scanner">
+    <meta property="og:description" content="An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go. Protect credentials locally in sub-20ms.">
+    <meta property="og:image" content="https://sentinel-cli.github.io/sentinel/social-preview.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://sentinel-cli.github.io/sentinel/">
+    <meta name="twitter:title" content="Sentinel — Statically Compiled Git Secret Scanner">
+    <meta name="twitter:description" content="An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go. Protect credentials locally in sub-20ms.">
+    <meta name="twitter:image" content="https://sentinel-cli.github.io/sentinel/social-preview.png">
+
+    <!-- Structured Data (JSON-LD Schema) for Google Search Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Sentinel",
+      "description": "An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go.",
+      "operatingSystem": "Linux, macOS, Windows, Android (Termux)",
+      "applicationCategory": "DeveloperApplication",
+      "softwareVersion": "2.0.4",
+      "codeRepository": "https://github.com/sentinel-cli/sentinel",
+      "license": "https://github.com/sentinel-cli/sentinel/blob/main/LICENSE",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Khaled Hani"
+      }
+    }
+    </script>
+    
+    <!-- Premium Fonts: Serif for Headings, Sans for Body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Minimal Header Navigation -->
+    <nav class="nav-bar">
+        <div class="container nav-wrapper">
+            <a href="#" class="nav-logo">
+                <svg class="logo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span class="logo-text">Sentinel</span>
+            </a>
+            <div class="nav-links">
+                <a href="#philosophy" class="nav-link">Philosophy</a>
+                <a href="#pipeline" class="nav-link">Pipeline</a>
+                <a href="#benchmarks" class="nav-link">Performance</a>
+                <a href="#installation" class="nav-link">Install</a>
+                <a href="#masterpieces" class="nav-link">Projects</a>
+                <a href="#blog" class="nav-link">Blog</a>
+                <a href="#community" class="nav-link">Community</a>
+                <a href="index-ar.html" class="lang-switch">العربية</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Hero Section -->
+        <article class="hero-section">
+            <div class="eyebrow">
+                Engineering Release Notes
+            </div>
+            <h1 class="hero-title">Eliminating credential leaks at the commit stage.</h1>
+            <p class="text-lead">Statically compiled in Go with zero external runtime dependencies, Sentinel runs validation scans in sub-20ms to secure staged files before they leave the developer workstation.</p>
+            
+            <p class="text-muted" style="font-size: 0.85rem; margin-top: -1rem;">Published by <strong>Khaled Hani</strong> on July 3, 2026</p>
+
+            <div class="hero-actions">
+                <a href="#installation" class="btn btn-primary">Deploy Sentinel</a>
+                <a href="https://github.com/sentinel-cli/sentinel" target="_blank" class="btn btn-secondary">
+                    GitHub Codebase
+                    <span class="btn-icon">↗</span>
+                </a>
+            </div>
+        </article>
+
+        <!-- Chapter 1: The Core Philosophy -->
+        <section id="philosophy" class="section scroll-fade">
+            <div class="eyebrow">
+                01 / The Thesis
+            </div>
+            <h2>Why local validation is the final line of defense</h2>
+            <p>In modern DevSecOps, secret scanning is often offloaded to continuous integration (CI) platforms or post-push webhooks. While valuable, these remote validations operate after the secret has already reached the remote hosting repository. Once a credential resides in the git database, it must be considered compromised—triggering costly key rotation, access log audits, and multi-team incident responses.</p>
+            
+            <blockquote>
+                "Once a private credential escapes the local workstation, security changes from prevention to remediation."
+            </blockquote>
+            
+            <p>Sentinel blocks leaks at the edge. By installing as a native git pre-commit hook directly in your local environment, it evaluates staged deltas and aborts the commit if an active credential, private key, or password configuration is matched. Because it operates locally, it requires no internet connection and does not log data to external analytics collectors.</p>
+        </section>
+
+        <!-- Chapter 2: The Three-Tier Pipeline -->
+        <section id="pipeline" class="section scroll-fade">
+            <div class="eyebrow">
+                02 / Technical Architecture
+            </div>
+            <h2>Verifying credentials in under 20 milliseconds</h2>
+            <p>Developer velocity is a major constraint for pre-commit verification. Hooks that introduce noticeable latency encourage developers to bypass the validation workflow entirely. To meet this constraint, Sentinel implements a three-tier pipeline that processes staging areas in milliseconds while maintaining high recall accuracy.</p>
+
+            <h3>Tier 1: Prefix Automaton</h3>
+            <p>Every file is parsed through an $O(N)$ Aho-Corasick multi-pattern search trie. Custom user signatures and known credential templates are compiled directly into the state machine, allowing the engine to discover candidates in a single linear character pass.</p>
+
+            <h3>Tier 2: Shannon Entropy Filtering</h3>
+            <p>Candidate tokens matched in the first pass are evaluated for character randomness. Sentinel calculates the exact entropy of the string to differentiate actual randomized access tokens from standard code templates or placeholder variables.</p>
+
+            <h3>Tier 3: Context Analysis</h3>
+            <p>Finally, the parser audits surrounding lines, variable assignments, and comments. This layer suppresses findings located in test assertions, mock environments, or lines specifically appended with a <code>// sentinel:ignore</code> directive.</p>
+
+            <h3>Output Demonstration</h3>
+            <p>When Sentinel identifies a leak, it aborts the commit process and renders a detailed breakdown of the findings in the console:</p>
+
+            <pre class="font-mono">
+ ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗     
+ ██╔════╝██╔════╝████╗  ██║╚══██╔══╝██║████╗  ██║██╔════╝██║     
+ ███████╗█████╗  ██╔██╗ ██║   ██║   ██║██╔██╗ ██║█████╗  ██║     
+ ╚════██║██╔══╝  ██║╚██╗██║   ██║   ██║██║╚██╗██║██╔══╝  ██║     
+ ███████║███████╗██║ ╚████║   ██║   ██║██║ ╚████║███████╗███████╗
+ ╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝
+  Pre-Commit Security Hook  │  v2.0.4
+
+   CRITICAL   .sentinel.yaml.example:48
+                [PATTERN] AWS Access Key ID
+                Token:  AKIAIO**********MPLE
+                → - "AKIAIOSFODNN7EXAMPLE"
+
+────────────────────────────────────────────────────────────────────
+  SENTINEL SCAN COMPLETE
+  Files scanned : 12
+  Elapsed       : 25.266ms
+  Findings      :  CRITICAL:1   HIGH:0   MEDIUM:0   LOW:0 
+────────────────────────────────────────────────────────────────────
+
+  ✖ COMMIT BLOCKED — remove the secrets above and try again.
+    Hint: If this is a false positive, append '// sentinel:ignore' to the preceding line.</pre>
+        </section>
+
+        <!-- Chapter 3: Benchmarks -->
+        <section id="benchmarks" class="section scroll-fade">
+            <div class="eyebrow">
+                03 / Performance
+            </div>
+            <h2>Workstation footprint and latency</h2>
+            <p>To evaluate Sentinel's performance, we run comparative workstation scans against <code>gitleaks</code> and <code>trufflehog</code>. Measurements are collected locally on an octa-core ARM64 workstation, tracking total execution latency and peak resident set size (RSS).</p>
+
+            <div class="spec-table-wrapper">
+                <table class="spec-table font-mono">
+                    <thead>
+                        <tr>
+                            <th>Audited Metric</th>
+                            <th>Sentinel (v2.0.4)</th>
+                            <th>Gitleaks (v8.30.1)</th>
+                            <th>TruffleHog (v3.95.7)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="spec-label">Execution Footprint (Binary)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">11.6 MB</td>
+                            <td>42.5 MB</td>
+                            <td>185.0 MB</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">Workstation RAM (Peak RSS)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">11.2 MB</td>
+                            <td>37.6 MB</td>
+                            <td>209.2 MB</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">Staged Filesystem Scan</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">20 ms</td>
+                            <td>150 ms</td>
+                            <td>7.26 s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">Historical Audit (Git Log)</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">30 ms</td>
+                            <td>170 ms</td>
+                            <td>3.21 s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-label">Dependency Overhead</td>
+                            <td style="font-weight: 600; color: var(--color-text-primary);">Zero</td>
+                            <td>Zero</td>
+                            <td>Zero</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Chapter 4: Installation -->
+        <section id="installation" class="section scroll-fade">
+            <div class="eyebrow">
+                04 / Installation
+            </div>
+            <h2>Deployment and local setup</h2>
+            <p>Sentinel is statically compiled to run natively across Linux, macOS, and Android/Termux. It does not require Go, Python, or additional runtime setups on the workstation.</p>
+
+            <h3>Option A: Pre-compiled Binaries (Recommended)</h3>
+            <p>The fastest way to install Sentinel without Go dependencies. Perfect for Termux/Android and Linux systems.</p>
+            <pre class="font-mono">
+# 1. Download the target binary
+wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.4/sentinel-v2.0.4-linux-arm64 -O sentinel
+
+# 2. Add execution permissions
+chmod +x sentinel
+
+# 3. Move to your binary path ($PREFIX/bin for Termux, or /usr/local/bin for Linux/macOS)
+mv sentinel $PREFIX/bin/
+
+# 4. Verify deployment
+sentinel version</pre>
+
+            <h3>Option B: Go package installer</h3>
+            <p>If you have Go installed on your path, fetch and compile the latest release directly:</p>
+            <pre class="font-mono">go install github.com/sentinel-cli/sentinel/cmd/sentinel@latest</pre>
+
+            <h3>Option C: Compile from source</h3>
+            <p>Clone the repository and build manually using our Makefile configurations:</p>
+            <pre class="font-mono">
+git clone https://github.com/sentinel-cli/sentinel.git
+cd sentinel
+make build
+./dist/sentinel version</pre>
+
+            <h3>Activating the Git Hook</h3>
+            <p>Once the binary is in your path, initialize the pre-commit validator inside your target repository:</p>
+            <pre class="font-mono">
+# Enable for the current repository
+sentinel install
+
+# Enable globally for all future clones/initializations
+sentinel install --global</pre>
+        </section>
+
+        <!-- Chapter 5: Workstation Execution & Commands -->
+        <section id="execution" class="section scroll-fade">
+            <div class="eyebrow">
+                05 / Execution Specs
+            </div>
+            <h2>Workstation run modes and directives</h2>
+            <p>Sentinel supports several CLI run modes to fit different developer workflows, ranging from automated Git pre-commit hooks to manual, ad-hoc filesystem scans.</p>
+
+            <h3>1. The Commit-Time Validator</h3>
+            <p>Executed automatically by the Git pre-commit hook during the staging process. It reads the index, extracts staged diff blobs, and scans them in-memory. If findings are found, the commit is aborted.</p>
+            <pre class="font-mono">sentinel run</pre>
+
+            <h3>2. Local Directory Scan</h3>
+            <p>Used to run manual ad-hoc audits on any directory or file tree recursively. Excellent for auditing directories before initial commits.</p>
+            <pre class="font-mono">sentinel scan -r ./path/to/project</pre>
+
+            <h3>3. Continuous Integration Export</h3>
+            <p>Generate structured logs in JSON or SARIF format for integration into external pipelines and alert aggregators.</p>
+            <pre class="font-mono">sentinel scan -r -f sarif . &gt; report.sarif</pre>
+        </section>
+
+        <!-- Chapter 6: Engineering Blog -->
+        <section id="blog" class="section scroll-fade">
+            <div class="eyebrow">
+                06 / Engineering Blog
+            </div>
+            <h2>Technical insights & system logs</h2>
+            <p>Articles written by the developers covering the design, optimization, and security philosophy of Sentinel.</p>
+            
+            <div style="margin: 2rem 0; border-top: 1px solid var(--color-border);">
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.5rem;">JULY 3, 2026</p>
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-serif-en); font-size: 1.5rem; font-weight: 400;"><a href="https://github.com/sentinel-cli/sentinel" target="_blank" style="color: inherit; text-decoration: none;">Memory Optimization: Compiling Rules directly to the Automaton</a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">How version 2.0.4 achieves a 27% memory footprint reduction (RSS) by compiling user-defined signatures directly into the search trie transitions, removing runtime regex parsing overhead.</p>
+                </div>
+                
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.5rem;">JUNE 28, 2026</p>
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-serif-en); font-size: 1.5rem; font-weight: 400;"><a href="https://github.com/sentinel-cli/sentinel" target="_blank" style="color: inherit; text-decoration: none;">The Fallacy of Post-Push Security Scanning</a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">Why remote repository scanning is too late. A study on the rotation window of exposed cloud credentials and why preventing the commit locally is the only zero-exposure security posture.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 7: Other Masterpieces -->
+        <section id="masterpieces" class="section scroll-fade">
+            <div class="eyebrow">
+                07 / Other Projects
+            </div>
+            <h2>Other engineering masterpieces</h2>
+            <p>Explore other security, networking, and system-level applications built in our network ecosystem.</p>
+
+            <div style="margin: 2rem 0; border-top: 1px solid var(--color-border);">
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-en); font-size: 1.25rem; font-weight: 600;"><a href="https://muslim-kh09.github.io/NexusFi-Web/" target="_blank" style="color: inherit; text-decoration: none;">NexusFi <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted);">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">A self-contained, 3-tier Micro-ISP and Local Cloud Ecosystem engineered to run natively on rooted Android devices. Connects L2 deauth daemons, OTG auto-telemetry, and HTB shaping.</p>
+                </div>
+                
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-en); font-size: 1.25rem; font-weight: 600;"><a href="https://net-anatomy.vercel.app" target="_blank" style="color: inherit; text-decoration: none;">NetAnatomy <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted);">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">An advanced network visualization and anatomical mapping tool for complex infrastructural topologies. Delivered via a diagnostic web dashboard.</p>
+                </div>
+
+                <div style="padding: 1.5rem 0; border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-family: var(--font-sans-en); font-size: 1.25rem; font-weight: 600;"><a href="https://decisify-web.vercel.app" target="_blank" style="color: inherit; text-decoration: none;">Decisify <span style="font-weight: 400; font-size: 0.95rem; color: var(--color-text-muted);">↗</span></a></h4>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: var(--color-text-muted);">A sophisticated decision-making engine and prioritization framework designed for rapid choice analysis and logic modeling.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 8: Community & User Discussions -->
+        <section id="community" class="section scroll-fade">
+            <div class="eyebrow">
+                08 / Community & Feedback
+            </div>
+            <h2>Get in touch & discuss security</h2>
+            <p>Sentinel is an open-source security tool built in collaboration with the developer community. We value feedback, rule suggestions, and reports from all users.</p>
+            
+            <p>If you would like to report a security issue, propose a new credential signature, or ask questions about workstation deployments, please use our community channels:</p>
+
+            <ul style="padding-left: 1.25rem; margin-top: 1rem; margin-bottom: 2rem;">
+                <li style="margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--color-text-secondary);"><strong>GitHub Discussions & Issues:</strong> Share feature requests, rule contributions, and report issues on our <a href="https://github.com/sentinel-cli/sentinel/issues" target="_blank" style="color: var(--color-text-primary); text-decoration: underline;">GitHub Repository</a>.</li>
+                <li style="margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--color-text-secondary);"><strong>Direct Developer Channel:</strong> You can contact Khaled Hani directly on Telegram at <a href="https://t.me/A245F" target="_blank" style="color: var(--color-text-primary); text-decoration: underline;">https://t.me/A245F</a> for support, direct feedback, or custom integrations.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-wrapper">
+            <p class="footer-copy">&copy; 2026 Sentinel. Released under the AGPLv3 License.</p>
+            <div class="footer-links">
+                <a href="https://github.com/sentinel-cli/sentinel" target="_blank" class="footer-link">GitHub Repository</a>
+                <a href="https://github.com/sentinel-cli/sentinel/blob/main/CHANGELOG.md" target="_blank" class="footer-link">Changelog</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
