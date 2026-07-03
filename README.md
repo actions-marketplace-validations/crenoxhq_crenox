@@ -16,7 +16,7 @@
 [![CI Status](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml/badge.svg?v=2)](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml)
 [![Latest Release](https://img.shields.io/github/v/release/sentinel-cli/sentinel?color=3670A0&logo=github&v=2)](https://github.com/sentinel-cli/sentinel/releases)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&v=2)](https://go.dev)
-[![Go Reference](https://pkg.go.dev/badge/github.com/sentinel-cli/sentinel.svg?v=2)](https://pkg.go.dev/github.com/sentinel-cli/sentinel)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sentinel-cli/sentinel/v2.svg?v=2)](https://pkg.go.dev/github.com/sentinel-cli/sentinel/v2)
 [![License](https://img.shields.io/badge/license-AGPL_3.0-blue?v=2)](LICENSE)
 
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Android%2FTermux-informational?v=2)](#installation)
@@ -419,7 +419,7 @@ sentinel version
 If you already have Go installed and properly configured in your `PATH`, you can fetch and compile the latest release directly:
 
 ```bash
-go install github.com/sentinel-cli/sentinel/cmd/sentinel@latest
+go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
 ```
 *(Note: Ensure `$(go env GOPATH)/bin` is added to your system `$PATH`)*
 
