@@ -27,7 +27,7 @@ fi
 
 if [ -z "$SENTINEL_BIN" ]; then
     echo "sentinel: hook is installed but the 'sentinel' binary was not found." >&2
-    echo "sentinel: install it via 'go install github.com/sentinel-cli/sentinel/cmd/sentinel@latest'" >&2
+    echo "sentinel: install it via 'go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest'" >&2
     exit 1
 fi
 

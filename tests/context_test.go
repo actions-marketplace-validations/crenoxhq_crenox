@@ -5,7 +5,7 @@ package tests
 import (
 	"testing"
 
-	sentinelcontext "github.com/sentinel-cli/sentinel/internal/context"
+	sentinelcontext "github.com/sentinel-cli/sentinel/v2/internal/context"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

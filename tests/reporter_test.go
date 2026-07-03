@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/internal/reporter"
-	"github.com/sentinel-cli/sentinel/internal/scanner"
+	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
+	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
 )
 
 // Simple structures to unmarshal and validate SARIF output

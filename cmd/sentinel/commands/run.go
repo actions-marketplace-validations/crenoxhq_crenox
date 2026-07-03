@@ -9,12 +9,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/internal/config"
-	"github.com/sentinel-cli/sentinel/internal/git"
-	"github.com/sentinel-cli/sentinel/internal/reporter"
-	"github.com/sentinel-cli/sentinel/internal/scanner"
-	"github.com/sentinel-cli/sentinel/internal/trie"
-	"github.com/sentinel-cli/sentinel/internal/updater"
+	"github.com/sentinel-cli/sentinel/v2/internal/config"
+	"github.com/sentinel-cli/sentinel/v2/internal/git"
+	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
+	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	"github.com/sentinel-cli/sentinel/v2/internal/trie"
+	"github.com/sentinel-cli/sentinel/v2/internal/updater"
 )
 
 // NewRunCmd builds the `sentinel run` sub-command, which is the actual

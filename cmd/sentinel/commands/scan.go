@@ -15,11 +15,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/internal/config"
-	"github.com/sentinel-cli/sentinel/internal/reporter"
-	"github.com/sentinel-cli/sentinel/internal/scanner"
-	"github.com/sentinel-cli/sentinel/internal/trie"
-	"github.com/sentinel-cli/sentinel/internal/updater"
+	"github.com/sentinel-cli/sentinel/v2/internal/config"
+	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
+	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	"github.com/sentinel-cli/sentinel/v2/internal/trie"
+	"github.com/sentinel-cli/sentinel/v2/internal/updater"
 )
 
 // NewScanCmd builds the `sentinel scan` sub-command for ad-hoc scanning

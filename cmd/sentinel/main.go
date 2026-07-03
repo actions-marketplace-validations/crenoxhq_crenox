@@ -14,8 +14,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/cmd/sentinel/commands"
-	"github.com/sentinel-cli/sentinel/pkg/version"
+	"github.com/sentinel-cli/sentinel/v2/cmd/sentinel/commands"
+	"github.com/sentinel-cli/sentinel/v2/pkg/version"
 )
 
 func init() {

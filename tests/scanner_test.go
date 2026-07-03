@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/internal/scanner"
-	"github.com/sentinel-cli/sentinel/internal/trie"
+	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	"github.com/sentinel-cli/sentinel/v2/internal/trie"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

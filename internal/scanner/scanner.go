@@ -17,9 +17,9 @@ import (
 	"regexp"
 	"strings"
 
-	sentinelcontext "github.com/sentinel-cli/sentinel/internal/context"
-	"github.com/sentinel-cli/sentinel/internal/entropy"
-	"github.com/sentinel-cli/sentinel/internal/trie"
+	sentinelcontext "github.com/sentinel-cli/sentinel/v2/internal/context"
+	"github.com/sentinel-cli/sentinel/v2/internal/entropy"
+	"github.com/sentinel-cli/sentinel/v2/internal/trie"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

@@ -114,7 +114,7 @@ This command performs the following actions:
 			// Fallback to go install if no raw binary is available.
 			if downloadURL == "" {
 				fmt.Printf("No matching pre-compiled binary found for %s/%s. Falling back to 'go install'...\n", goos, goarch)
-				c := exec.Command("go", "install", "github.com/sentinel-cli/sentinel/cmd/sentinel@latest")
+				c := exec.Command("go", "install", "github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest")
 				c.Stdout = os.Stdout
 				c.Stderr = os.Stderr
 				if err := c.Run(); err != nil {

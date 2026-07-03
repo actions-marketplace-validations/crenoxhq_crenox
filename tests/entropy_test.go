@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sentinel-cli/sentinel/internal/entropy"
+	"github.com/sentinel-cli/sentinel/v2/internal/entropy"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

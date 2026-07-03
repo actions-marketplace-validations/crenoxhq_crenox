@@ -1,4 +1,4 @@
-module github.com/sentinel-cli/sentinel
+module github.com/sentinel-cli/sentinel/v2
 
 go 1.22
 
@@ -15,9 +15,3 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 )
-
-// Retract v1.0.2–v1.0.5 (including this version).
-// These tags were published during a history-cleanup operation and carry
-// no meaningful changes over v1.0.1. After this retraction is indexed,
-// `go install ...@latest` resolves back to v1.0.1.
-retract [v1.0.2, v1.0.5]

@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/sentinel-cli/sentinel/pkg/version"
+	"github.com/sentinel-cli/sentinel/v2/pkg/version"
 	"github.com/spf13/cobra"
 )
 

@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/sentinel-cli/sentinel/internal/scanner"
-	"github.com/sentinel-cli/sentinel/pkg/version"
+	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	"github.com/sentinel-cli/sentinel/v2/pkg/version"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

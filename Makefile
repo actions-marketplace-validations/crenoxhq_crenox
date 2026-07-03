@@ -5,7 +5,7 @@
 BINARY      := sentinel
 DIST_DIR    := dist
 CMD_PATH    := ./cmd/sentinel
-MODULE      := github.com/sentinel-cli/sentinel
+MODULE      := github.com/sentinel-cli/sentinel/v2
 
 VERSION     := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT      := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
