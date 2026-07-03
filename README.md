@@ -13,17 +13,17 @@
 
 **Enterprise-grade Git pre-commit secret detector, Gitleaks alternative, and high-performance credentials scanner written in Go.**
 
-[![CI Status](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml)
-[![Latest Release](https://img.shields.io/github/v/release/sentinel-cli/sentinel?color=3670A0&logo=github)](https://github.com/sentinel-cli/sentinel/releases)
-[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
-[![Go Reference](https://pkg.go.dev/badge/github.com/sentinel-cli/sentinel.svg)](https://pkg.go.dev/github.com/sentinel-cli/sentinel)
-[![License](https://img.shields.io/badge/license-AGPL_3.0-blue)](LICENSE)
+[![CI Status](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml/badge.svg?v=2)](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/sentinel-cli/sentinel?color=3670A0&logo=github&v=2)](https://github.com/sentinel-cli/sentinel/releases)
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&v=2)](https://go.dev)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sentinel-cli/sentinel.svg?v=2)](https://pkg.go.dev/github.com/sentinel-cli/sentinel)
+[![License](https://img.shields.io/badge/license-AGPL_3.0-blue?v=2)](LICENSE)
 
-[![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Android%2FTermux-informational)](#installation)
-[![Repository Size](https://img.shields.io/github/repo-size/sentinel-cli/sentinel?color=success&logo=git)](https://github.com/sentinel-cli/sentinel)
-[![GitHub Stars](https://img.shields.io/github/stars/sentinel-cli/sentinel?style=flat&logo=github&color=gold)](https://github.com/sentinel-cli/sentinel/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/sentinel-cli/sentinel?style=flat&logo=github&color=blue)](https://github.com/sentinel-cli/sentinel/network/members)
-[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
+[![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Android%2FTermux-informational?v=2)](#installation)
+[![Repository Size](https://img.shields.io/github/repo-size/sentinel-cli/sentinel?color=success&logo=git&v=2)](https://github.com/sentinel-cli/sentinel)
+[![GitHub Stars](https://img.shields.io/github/stars/sentinel-cli/sentinel?style=flat&logo=github&color=gold&v=2)](https://github.com/sentinel-cli/sentinel/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/sentinel-cli/sentinel?style=flat&logo=github&color=blue&v=2)](https://github.com/sentinel-cli/sentinel/network/members)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg?v=2)](https://github.com/avelino/awesome-go)
 
 
 </div>
