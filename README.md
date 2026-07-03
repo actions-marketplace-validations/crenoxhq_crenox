@@ -303,6 +303,12 @@ sentinel/
 │       │   └── version.go           # Build metadata command
 │       └── main.go                  # CLI root
 │
+├── docs/
+│   ├── app.js                       # Simple scroll animations controller
+│   ├── index-ar.html                # Arabic translated landing page (RTL)
+│   ├── index.html                   # Main English landing page (LTR)
+│   └── style.css                    # Dual-language minimalist stylesheet
+│
 ├── internal/
 │   ├── config/
 │   │   └── config.go                # YAML configuration loader
