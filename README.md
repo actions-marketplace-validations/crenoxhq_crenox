@@ -529,8 +529,9 @@ sentinel scan --history .
 # JSON output — written to stdout for piping
 sentinel scan -f json -r ./src | jq '.findings[] | select(.severity == "CRITICAL")'
 
-# SARIF for GitHub Advanced Security
-sentinel scan -f sarif -r . > sentinel.sarif
+# SARIF output saved directly to file (keeps pretty terminal logs)
+sentinel scan -f sarif -o sentinel.sarif .
+
 ```
 
 > In ad-hoc mode, files are processed concurrently using `max(runtime.NumCPU(), 4)` goroutines.
@@ -542,7 +543,7 @@ sentinel scan -f sarif -r . > sentinel.sarif
 # GitHub Actions
 - name: Sentinel secret scan
   run: |
-    sentinel scan -f sarif -r . > sentinel.sarif
+    sentinel scan -f sarif -o sentinel.sarif .
 
 - name: Upload to GitHub Code Scanning
   uses: github/codeql-action/upload-sarif@v3
@@ -554,11 +555,12 @@ sentinel scan -f sarif -r . > sentinel.sarif
 # GitLab CI
 sentinel:
   script:
-    - sentinel scan -f json -r . | tee sentinel-report.json
+    - sentinel scan -f json -o sentinel-report.json .
     - jq -e '.status == "clean"' sentinel-report.json
   artifacts:
     reports:
       sast: sentinel-report.json
+
 ```
 
 ### Command Reference
@@ -584,6 +586,7 @@ Scans staged changes only. Invoked automatically by the Git hook.
 |------|---------|-------------|
 | `-c, --config` | auto-detected | Path to `.sentinel.yaml` |
 | `-f, --format` | `pretty` | `pretty` `json` `plain` `sarif` |
+| `-o, --output` | | Write report directly to file, preserving pretty stdout logs |
 | `-r, --recursive` | false | Walk subdirectories |
 | `--history` | false | Scan entire Git commit history |
 | `-v, --verbose` | false | Debug output to stderr |
