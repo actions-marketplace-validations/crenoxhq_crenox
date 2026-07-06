@@ -738,11 +738,11 @@ Commercial SaaS deployment or distribution of a modified version without releasi
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=sentinel-cli%2Fsentinel&type=date&legend=top-left">
+<a href="https://star-history.com/#sentinel-cli/sentinel&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=sentinel-cli/sentinel&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=sentinel-cli/sentinel&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=sentinel-cli/sentinel&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date" />
  </picture>
 </a>
 
