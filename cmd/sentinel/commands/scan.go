@@ -31,6 +31,7 @@ func NewScanCmd() *cobra.Command {
 		recursive  bool
 		verbose    bool
 		history    bool
+		outputPath string
 	)
 
 	cmd := &cobra.Command{
@@ -64,7 +65,7 @@ Examples:
 			if !history && len(args) == 0 {
 				return fmt.Errorf("requires at least 1 arg(s), only received 0")
 			}
-			return runAdHocScan(args, configPath, format, recursive, verbose, history)
+			return runAdHocScan(args, configPath, format, recursive, verbose, history, outputPath)
 		},
 	}
 
@@ -73,11 +74,12 @@ Examples:
 	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "scan directories recursively")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
 	cmd.Flags().BoolVar(&history, "history", false, "scan entire git commit history")
+	cmd.Flags().StringVarP(&outputPath, "output", "o", "", "write scan report to file")
 
 	return cmd
 }
 
-func runAdHocScan(paths []string, configPath, format string, recursive, verbose, history bool) error {
+func runAdHocScan(paths []string, configPath, format string, recursive, verbose, history bool, outputPath string) error {
 	updateChan := updater.CheckForUpdateAsync()
 	startTime := time.Now()
 
@@ -87,6 +89,17 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 	}
 	if verbose {
 		cfg.Verbose = true
+	}
+
+	var fileReporter *reporter.Reporter
+	if outputPath != "" {
+		file, err := os.Create(outputPath)
+		if err != nil {
+			return fmt.Errorf("failed to create output file: %w", err)
+		}
+		defer file.Close()
+		fileReporter = reporter.New(file, reporter.ParseFormat(format))
+		format = "pretty"
 	}
 
 	// JSON is machine-readable output — write to stdout so it can be piped/redirected.
@@ -329,6 +342,9 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 
 	if len(allFindings) == 0 {
 		rep.PrintClean(elapsed, scannedCount)
+		if fileReporter != nil {
+			fileReporter.PrintClean(elapsed, scannedCount)
+		}
 		select {
 		case msg := <-updateChan:
 			if msg != "" {
@@ -341,6 +357,10 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 
 	rep.PrintFindings(allFindings)
 	rep.PrintSummary(allFindings, elapsed, scannedCount)
+	if fileReporter != nil {
+		fileReporter.PrintFindings(allFindings)
+		fileReporter.PrintSummary(allFindings, elapsed, scannedCount)
+	}
 	os.Exit(1)
 	return nil
 }
