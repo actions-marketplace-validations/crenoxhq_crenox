@@ -40,7 +40,7 @@
 
 See Sentinel scan the famous `sample_secrets` repository and its entire commit history in milliseconds:
 
-[![Watch the Demo](https://img.shields.io/badge/Asciinema_Player-Watch_Interactive_Demo-red?style=for-the-badge&logo=asciinema)](https://sentinel-cli.github.io/sentinel/#pipeline)
+![Sentinel Demo](docs/demo.gif)
 
 To stream the recording directly in your terminal, run:
 ```bash
