@@ -823,7 +823,7 @@ BenchmarkFullPipeline-8          500   2,341,201 ns/op     12,340 B/op
 
 **Clean commit (exit 0):**
 ```
-  [PASS] SENTINEL CLEAN  —  4 file(s) scanned in 3.2ms
+  ✔ SENTINEL CLEAN  —  4 file(s) scanned in 3.2ms
 ```
 
 **Blocked commit (exit 1):**
@@ -846,7 +846,7 @@ BenchmarkFullPipeline-8          500   2,341,201 ns/op     12,340 B/op
   Findings      :  CRITICAL:1   HIGH:1   MEDIUM:0   LOW:0
 ────────────────────────────────────────────────────────────────────
 
-  [FAIL] COMMIT BLOCKED — remove the secrets above and try again.
+  ✘ COMMIT BLOCKED — remove the secrets above and try again.
 ```
 
 ---
