@@ -19,6 +19,12 @@ vendor/
 Thumbs.db
 .idea/
 .vscode/
+.cursor/
+.windsurf/
+.notes/
+.clinerules
+.cursorrules
+.windsurfrules
 *.swp
 *.swo
 *~
