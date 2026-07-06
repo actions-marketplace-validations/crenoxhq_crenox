@@ -736,18 +736,6 @@ Commercial SaaS deployment or distribution of a modified version without releasi
 
 ---
 
-## Star History
-
-<a href="https://star-history.com/#sentinel-cli/sentinel&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sentinel-cli/sentinel&type=Date" />
- </picture>
-</a>
-
----
-
 <div align="center">
 Designed for security. Engineered for efficiency.
 </div>
