@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Mailgun and Hex Letters-Only Tests:** Added unit tests verifying full token extraction and letter-only hex token detection.
 
 ### Fixed
+- **Updater Version Comparison:** Fixed a bug in `isNewer` where pre-release suffixes (like `-beta` or `-rc`) caused the updater to fail integer conversion and incorrectly prompt users to downgrade to older stable versions.
 - **Mailgun Token Truncation:** Fixed `containsAssignmentOrKeyword` to prevent custom/Mailgun prefixes (like `key-`) from being stripped from reported tokens.
 - **Hex letters-only False Negatives:** Removed `isJavaConstant` check from the hex token entropy filter to prevent random letter-only hex keys (e.g. `abcdefABCDEF...`) from being skipped.
 

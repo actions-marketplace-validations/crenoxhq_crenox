@@ -80,11 +80,20 @@ func CheckForUpdateAsync() <-chan string {
 }
 
 func isNewer(latest, current string) bool {
-	if latest == "" || current == "dev" {
+	if latest == "" || current == "dev" || strings.HasPrefix(current, "dev-") || strings.Contains(current, "dirty") {
 		return false
 	}
 	latest = strings.TrimPrefix(latest, "v")
 	current = strings.TrimPrefix(current, "v")
+
+	// Helper to extract numeric part before any hyphen
+	getNum := func(part string) int {
+		if idx := strings.IndexByte(part, '-'); idx != -1 {
+			part = part[:idx]
+		}
+		n, _ := strconv.Atoi(part)
+		return n
+	}
 
 	lParts := strings.Split(latest, ".")
 	cParts := strings.Split(current, ".")
@@ -93,10 +102,10 @@ func isNewer(latest, current string) bool {
 		l := 0
 		c := 0
 		if i < len(lParts) {
-			l, _ = strconv.Atoi(lParts[i])
+			l = getNum(lParts[i])
 		}
 		if i < len(cParts) {
-			c, _ = strconv.Atoi(cParts[i])
+			c = getNum(cParts[i])
 		}
 		if l > c {
 			return true
@@ -105,5 +114,12 @@ func isNewer(latest, current string) bool {
 			return false
 		}
 	}
+	
+	// If the major.minor.patch are equal, check if current is a pre-release and latest is stable
+	// e.g. latest = "2.0.5", current = "2.0.5-beta"
+	if !strings.Contains(latest, "-") && strings.Contains(current, "-") {
+		return true
+	}
+	
 	return false
 }
