@@ -32,6 +32,9 @@ type Signature struct {
 
 	// Validator is an optional regex to strictly validate the extracted token.
 	Validator *regexp.Regexp
+
+	// IsAssignmentOrKeyword is pre-calculated to speed up parsing.
+	IsAssignmentOrKeyword bool
 }
 
 // BuiltinSignatures is the exhaustive catalogue of known secret prefixes that
@@ -163,18 +166,18 @@ var BuiltinSignatures = []Signature{
 // Aho-Corasick Automaton
 // ──────────────────────────────────────────────────────────────────────────────
 
-const alphabetSize = 256
+const alphabetSize = 128
 
 // acNode is a single state in the Aho-Corasick automaton.
 type acNode struct {
-	children [alphabetSize]*acNode
-	fail     *acNode
+	children [alphabetSize]uint16
+	fail     uint16
 	output   []*Signature // signatures that end at this state
 }
 
 // Automaton is the compiled, immutable Aho-Corasick search machine.
 type Automaton struct {
-	root *acNode
+	nodes []acNode
 }
 
 // Match records a single pattern hit found during a scan.
@@ -196,29 +199,35 @@ type Match struct {
 // Build constructs an Aho-Corasick automaton from the given signatures.
 // It lowercases prefixes so that matching is case-insensitive.
 func Build(sigs []Signature) *Automaton {
-	root := &acNode{}
+	// Pre-allocate a reasonable capacity to avoid re-allocations
+	nodes := make([]acNode, 1, 2048) // Index 0 is root
 
 	// Phase 1: insert all prefixes into the trie.
 	for i := range sigs {
 		sig := &sigs[i]
-		cur := root
+		sig.IsAssignmentOrKeyword = isAssignmentOrKeyword(sig.Prefix)
+		cur := uint16(0)
 		for _, b := range []byte(strings.ToLower(sig.Prefix)) {
-			if cur.children[b] == nil {
-				cur.children[b] = &acNode{}
+			if b >= alphabetSize {
+				continue // Skip non-ASCII characters in prefixes if any exist
 			}
-			cur = cur.children[b]
+			if nodes[cur].children[b] == 0 {
+				nodes = append(nodes, acNode{})
+				nodes[cur].children[b] = uint16(len(nodes) - 1)
+			}
+			cur = nodes[cur].children[b]
 		}
-		cur.output = append(cur.output, sig)
+		nodes[cur].output = append(nodes[cur].output, sig)
 	}
 
 	// Phase 2: BFS to compute failure links (classic Aho-Corasick construction).
-	queue := make([]*acNode, 0, 256)
+	queue := make([]uint16, 0, alphabetSize)
 	for c := 0; c < alphabetSize; c++ {
-		if root.children[c] != nil {
-			root.children[c].fail = root
-			queue = append(queue, root.children[c])
+		if child := nodes[0].children[c]; child != 0 {
+			nodes[child].fail = 0
+			queue = append(queue, child)
 		} else {
-			root.children[c] = root // loop back to root for mismatches
+			nodes[0].children[c] = 0 // loop back to root for mismatches
 		}
 	}
 
@@ -226,56 +235,40 @@ func Build(sigs []Signature) *Automaton {
 		cur := queue[0]
 		queue = queue[1:]
 		for c := 0; c < alphabetSize; c++ {
-			child := cur.children[c]
-			if child == nil {
+			child := nodes[cur].children[c]
+			if child == 0 {
 				// Shortcut: redirect miss to the failure-link's child.
-				cur.children[c] = cur.fail.children[c]
+				nodes[cur].children[c] = nodes[nodes[cur].fail].children[c]
 				continue
 			}
-			child.fail = cur.fail.children[c]
+			nodes[child].fail = nodes[nodes[cur].fail].children[c]
 			// Merge output of failure link into child.
-			child.output = append(child.output, child.fail.output...)
+			nodes[child].output = append(nodes[child].output, nodes[nodes[child].fail].output...)
 			queue = append(queue, child)
 		}
 	}
 
-	return &Automaton{root: root}
+	return &Automaton{nodes: nodes}
 }
 
-// Search scans content and returns all Matches.  The scan is O(n + m) where n
-// is the content length and m is the number of matches.
+// Search scans content and returns all Signature matches found.
+// It operates in O(n) time. The returned Match values contain Sig and Offset
+// only — the caller is responsible for line-number tracking.
 func (a *Automaton) Search(content []byte) []Match {
 	var matches []Match
-
-	lineNum := 1
-	lineStart := 0
-
-	cur := a.root
-	for i, b := range content {
-		if b == '\n' {
-			lineNum++
-			lineStart = i + 1
+	cur := uint16(0)
+	for i := 0; i < len(content); i++ {
+		c := toLower(content[i])
+		if c >= alphabetSize {
+			cur = 0 // reset on non-ASCII characters
+			continue
 		}
-		c := toLower(b)
-		cur = cur.children[c]
-		if len(cur.output) > 0 {
-			// Find the end of the line for LineContent
-			end := i
-			for end < len(content) && content[end] != '\n' {
-				end++
-			}
-
-			lineContent := content[lineStart:end]
-			if len(lineContent) > 512 {
-				lineContent = lineContent[:512]
-			}
-
-			for _, sig := range cur.output {
+		cur = a.nodes[cur].children[c]
+		if len(a.nodes[cur].output) > 0 {
+			for _, sig := range a.nodes[cur].output {
 				matches = append(matches, Match{
-					Sig:         sig,
-					Offset:      i,
-					Line:        lineNum,
-					LineContent: lineContent,
+					Sig:    sig,
+					Offset: i,
 				})
 			}
 		}
@@ -284,9 +277,31 @@ func (a *Automaton) Search(content []byte) []Match {
 }
 
 // toLower converts an ASCII byte to lowercase without a branch table.
+// If b >= 128, it returns it as-is, which will be caught by the loop bounds check.
 func toLower(b byte) byte {
 	if b >= 'A' && b <= 'Z' {
 		return b + ('a' - 'A')
 	}
 	return b
+}
+
+// isAssignmentOrKeyword checks case-insensitively if prefix contains '=' or ':',
+// or matches one of the WordPress custom key/salt definitions.
+func isAssignmentOrKeyword(s string) bool {
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if b == '=' || b == ':' {
+			return true
+		}
+	}
+	// Check for exact WordPress config keywords (case-insensitive)
+	upper := strings.ToUpper(s)
+	return strings.Contains(upper, "AUTH_KEY") ||
+		strings.Contains(upper, "SECURE_AUTH_KEY") ||
+		strings.Contains(upper, "LOGGED_IN_KEY") ||
+		strings.Contains(upper, "NONCE_KEY") ||
+		strings.Contains(upper, "AUTH_SALT") ||
+		strings.Contains(upper, "SECURE_AUTH_SALT") ||
+		strings.Contains(upper, "LOGGED_IN_SALT") ||
+		strings.Contains(upper, "NONCE_SALT")
 }

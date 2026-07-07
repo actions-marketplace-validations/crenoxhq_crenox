@@ -337,6 +337,28 @@ MIIEpAIBAAKCAQEA3...
 	}
 }
 
+func TestScanner_MailgunKey_NotTruncated(t *testing.T) {
+	s := defaultScanner()
+	findings := scan(s, "config.go", `mailgunKey := "key-notarealmailgunkey1234567890abc"`)
+	if len(findings) == 0 {
+		t.Fatal("expected Mailgun key finding")
+	}
+	f := findings[0]
+	if f.Token != "key-notarealmailgunkey1234567890abc" {
+		t.Errorf("expected full Mailgun token with key- prefix, got %q", f.Token)
+	}
+}
+
+func TestScanner_HexLettersOnly_Detected(t *testing.T) {
+	s := defaultScanner()
+	// abcdefABCDEFabcdefABCDEF is a 24-character hex string composed entirely of letters a-f and A-F.
+	// It should be detected as a hex token by the entropy analyzer and not skipped by isJavaConstant.
+	findings := scan(s, "secret.txt", `abcdefABCDEFabcdefABCDEF`)
+	if len(findings) == 0 {
+		t.Error("expected finding for hex token composed entirely of letters a-f/A-F")
+	}
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // IsBinary detection
 // ──────────────────────────────────────────────────────────────────────────────

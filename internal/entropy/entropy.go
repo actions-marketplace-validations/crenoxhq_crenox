@@ -119,10 +119,8 @@ func Analyze(content []byte, threshold float64, minLen int) []EntropyHit {
 					}
 				})
 
-				// Extract and score hex-alphabet tokens (must be even length to look
-				// like a real hash/key).
 				extractHexTokens(line, minLen, func(tok []byte) {
-					if len(tok)%2 != 0 || isJavaConstant(tok) {
+					if len(tok)%2 != 0 {
 						return
 					}
 					e := Shannon(tok)

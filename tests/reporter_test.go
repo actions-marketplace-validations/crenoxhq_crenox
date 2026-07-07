@@ -101,3 +101,78 @@ func TestSARIFReporter(t *testing.T) {
 		t.Errorf("expected line 15, got %d", res.Locations[0].PhysicalLocation.Region.StartLine)
 	}
 }
+
+func TestJSONReporter(t *testing.T) {
+	if reporter.ParseFormat("json") != reporter.FormatJSON {
+		t.Fatalf("expected ParseFormat('json') to be FormatJSON")
+	}
+
+	mockFindings := []scanner.Finding{
+		{
+			FilePath:      "config.json",
+			Line:          10,
+			Severity:      "CRITICAL",
+			DetectionTier: scanner.TierTrie,
+			SignatureID:   "aws-access-key",
+			Description:   "AWS Access Key",
+			Token:         "AKIAIOSFODNN7EXAMPLE",
+		},
+	}
+
+	buf := new(bytes.Buffer)
+	rep := reporter.New(buf, reporter.FormatJSON)
+	rep.PrintSummary(mockFindings, 50*time.Millisecond, 1)
+
+	var output map[string]interface{}
+	if err := json.Unmarshal(buf.Bytes(), &output); err != nil {
+		t.Fatalf("failed to unmarshal JSON report: %v", err)
+	}
+
+	findingsRaw, ok := output["findings"].([]interface{})
+	if !ok || len(findingsRaw) != 1 {
+		t.Fatalf("expected 1 finding in JSON, got %v", output["findings"])
+	}
+	finding := findingsRaw[0].(map[string]interface{})
+	if finding["file_path"] != "config.json" {
+		t.Errorf("expected file config.json, got %v", finding["file_path"])
+	}
+}
+
+func TestPlainReporter(t *testing.T) {
+	if reporter.ParseFormat("plain") != reporter.FormatPlain {
+		t.Fatalf("expected ParseFormat('plain') to be FormatPlain")
+	}
+
+	mockFindings := []scanner.Finding{
+		{
+			FilePath:      "README.md",
+			Line:          5,
+			Severity:      "LOW",
+			DetectionTier: scanner.TierTrie,
+			SignatureID:   "test-key",
+			Description:   "Test Key",
+			Token:         "TEST1234",
+		},
+	}
+
+	buf := new(bytes.Buffer)
+	rep := reporter.New(buf, reporter.FormatPlain)
+	rep.PrintFindings(mockFindings)
+
+	outStr := buf.String()
+	if !bytes.Contains(buf.Bytes(), []byte("README.md:5")) {
+		t.Errorf("expected plain output to contain 'README.md:5', got %s", outStr)
+	}
+	if !bytes.Contains(buf.Bytes(), []byte("Test Key")) {
+		t.Errorf("expected plain output to contain 'Test Key'")
+	}
+}
+
+func TestParseFormat_Default(t *testing.T) {
+	if reporter.ParseFormat("unknown") != reporter.FormatPretty {
+		t.Fatalf("expected unknown format to default to FormatPretty")
+	}
+	if reporter.ParseFormat("") != reporter.FormatPretty {
+		t.Fatalf("expected empty format to default to FormatPretty")
+	}
+}

@@ -103,33 +103,33 @@ asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
 
 ## Performance
 
-Measured on real-world repositories with Sentinel v2.0.4 against the two most popular alternatives.
+Measured on real-world repositories with Sentinel v2.0.5 against the two most popular alternatives.
 
 <details>
-<summary>Filesystem Scan Results</summary>
+<summary>Filesystem Scan Results (Standard Mode)</summary>
 
-| Repository | Tool | Time | Peak RAM | Findings |
+| Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.4** | **20 ms** | **11.2 MB** | **2** |
-| | Gitleaks v8.30.1 | 150 ms | 37.6 MB | 1 |
-| | TruffleHog v3.95.7 | 7.26 s | 209.2 MB | 1 |
-| truffleHogRegexes | **Sentinel v2.0.4** | **30 ms** | **11.8 MB** | **4** |
-| | Gitleaks v8.30.1 | 210 ms | 37.2 MB | 1 |
-| | TruffleHog v3.95.7 | 7.13 s | 207.8 MB | 1 |
+| sample\_secrets | **Sentinel v2.0.5** | **40 ms** | **11.3 MB** | **2** |
+| | Gitleaks v8.30.1 | 220 ms | 15.0 MB | 1 |
+| | TruffleHog v3.95.7 | 11.41 s | 153.2 MB | 3 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **30 ms** | **11.5 MB** | **0** (Noise Filtered) |
+| | Gitleaks v8.30.1 | 210 ms | 16.0 MB | 1 |
+| | TruffleHog v3.95.7 | 7.13 s | 154.5 MB | 0 |
 
 </details>
 
 <details>
-<summary>Git History Scan Results</summary>
+<summary>Git History Scan Results (History Mode)</summary>
 
-| Repository | Tool | Time | Peak RAM | Findings |
+| Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.4** | **30 ms** | **10.9 MB** | **8** |
-| | Gitleaks v8.30.1 | 170 ms | 37.3 MB | 5 |
-| | TruffleHog v3.95.7 | 3.21 s | 192.6 MB | 1 |
-| truffleHogRegexes | **Sentinel v2.0.4** | **40 ms** | **12.0 MB** | **6** |
-| | Gitleaks v8.30.1 | 220 ms | 40.1 MB | 8 |
-| | TruffleHog v3.95.7 | 3.24 s | 192.8 MB | 1 |
+| sample\_secrets | **Sentinel v2.0.5** | **140 ms** | **11.2 MB** | **8** |
+| | Gitleaks v8.30.1 | 160 ms | 16.0 MB | 5 |
+| | TruffleHog v3.95.7 | 9.05 s | 155.7 MB | 3 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **60 ms** | **11.6 MB** | **5** |
+| | Gitleaks v8.30.1 | 260 ms | 16.8 MB | 6 |
+| | TruffleHog v3.95.7 | 6.32 s | 152.9 MB | 0 |
 
 </details>
 
@@ -137,9 +137,9 @@ Measured on real-world repositories with Sentinel v2.0.4 against the two most po
 
 | Metric | vs Gitleaks | vs TruffleHog |
 |--------|-------------|---------------|
-| Speed | 6x faster | 180x faster |
-| Memory | 3x less | 17x less |
-| Recall (sample_secrets history) | +60% more secrets found | +700% more secrets found |
+| **Speed** | **1.1x to 7x faster** | **64x to 285x faster** |
+| **Memory** | **1.3x to 1.5x less RAM** | **12x to 14x less RAM** |
+| **Recall (Accuracy)** | Finds obfuscated & encoded secrets ignored by others | Superior noise filtering (Zero false positives) |
 
 ---
 
@@ -201,7 +201,7 @@ Measured on real-world repositories with Sentinel v2.0.4 against the two most po
          |
   [Reporter  —  internal/reporter/reporter.go]
    pretty / plain  → stderr    (human-readable, ANSI color)
-   json / sarif    → stdout    (machine-readable, pipeable)
+   json / sarif    → stdout    (or directly to file if --output is used)
          |
   exit 0 (CLEAN)  |  exit 1 (BLOCKED)
 ```
@@ -351,7 +351,6 @@ sentinel version
 
 ```bash
 go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
-# Requires $(go env GOPATH)/bin in $PATH
 ```
 
 ### Build from Source
@@ -400,7 +399,7 @@ sentinel uninstall
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/sentinel-cli/sentinel
-    rev: v2.0.4
+    rev: v2.0.5
     hooks:
       - id: sentinel
 ```
@@ -529,8 +528,9 @@ sentinel scan --history .
 # JSON output — written to stdout for piping
 sentinel scan -f json -r ./src | jq '.findings[] | select(.severity == "CRITICAL")'
 
-# SARIF for GitHub Advanced Security
-sentinel scan -f sarif -r . > sentinel.sarif
+# SARIF output saved directly to file (keeps pretty terminal logs)
+sentinel scan -f sarif -o sentinel.sarif .
+
 ```
 
 > In ad-hoc mode, files are processed concurrently using `max(runtime.NumCPU(), 4)` goroutines.
@@ -538,27 +538,43 @@ sentinel scan -f sarif -r . > sentinel.sarif
 
 ### CI Integration
 
-```yaml
-# GitHub Actions
-- name: Sentinel secret scan
-  run: |
-    sentinel scan -f sarif -r . > sentinel.sarif
+#### GitHub Actions (Official Reusable Action)
+The easiest way to integrate Sentinel into your GitHub Actions workflow is by using our official reusable action. It handles Go installation, compilation cache, and scanning automatically:
 
-- name: Upload to GitHub Code Scanning
+```yaml
+- name: Run Sentinel Security Scan
+  uses: sentinel-cli/sentinel@v2
+  with:
+    version: 'latest' # Optional: version to use (e.g. 'v2.0.5')
+    args: '.'         # Optional: arguments to pass (e.g. "." or "--history .")
+    sarif: 'true'     # Optional: set to 'true' to export findings as a SARIF report
+```
+
+To upload the results to GitHub Advanced Security (Code Scanning Alerts), configure the upload step:
+
+```yaml
+- name: Upload SARIF report
+  if: always()
   uses: github/codeql-action/upload-sarif@v3
   with:
-    sarif_file: sentinel.sarif
+    sarif_file: sentinel-results.sarif
 ```
+
+> [!TIP]
+> You can inspect the official [action.yml](action.yml) file in the root of this repository to use as a template or reference for building your own custom GitHub Actions.
+
+
 
 ```yaml
 # GitLab CI
 sentinel:
   script:
-    - sentinel scan -f json -r . | tee sentinel-report.json
+    - sentinel scan -f json -o sentinel-report.json .
     - jq -e '.status == "clean"' sentinel-report.json
   artifacts:
     reports:
       sast: sentinel-report.json
+
 ```
 
 ### Command Reference
@@ -584,6 +600,7 @@ Scans staged changes only. Invoked automatically by the Git hook.
 |------|---------|-------------|
 | `-c, --config` | auto-detected | Path to `.sentinel.yaml` |
 | `-f, --format` | `pretty` | `pretty` `json` `plain` `sarif` |
+| `-o, --output` | | Write report directly to file, preserving pretty stdout logs |
 | `-r, --recursive` | false | Walk subdirectories |
 | `--history` | false | Scan entire Git commit history |
 | `-v, --verbose` | false | Debug output to stderr |
@@ -644,7 +661,7 @@ A background check runs on each invocation, querying the API at most once per 24
 
 ```json
 {
-  "sentinel_version": "v2.0.4",
+  "sentinel_version": "v2.0.5",
   "status": "blocked",
   "scanned_files": 4,
   "elapsed_ms": 5,

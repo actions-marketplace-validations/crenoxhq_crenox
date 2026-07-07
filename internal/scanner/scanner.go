@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 
 	sentinelcontext "github.com/sentinel-cli/sentinel/v2/internal/context"
 	"github.com/sentinel-cli/sentinel/v2/internal/entropy"
@@ -198,12 +199,25 @@ var (
 	prefixHtml          = []byte("<!--")
 )
 
+// b64Pool caches reusable Base64 decoding buffers to minimize GC pressure during hot paths.
+var b64Pool = sync.Pool{
+	New: func() interface{} {
+		buf := make([]byte, 3072)
+		return &buf
+	},
+}
+
 // ScanContent runs the full three-tier pipeline against the given raw content
 // and returns all confirmed Findings.
 //
 // filePath is used only for Tier 3 context decisions (test-file suppression).
 func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 	var findings []Finding
+
+	// Retrieve a reusable decoding buffer from the pool
+	decBufPtr := b64Pool.Get().(*[]byte)
+	decBuf := *decBufPtr
+	defer b64Pool.Put(decBufPtr)
 
 	// We don't need a global map anymore since we process line by line.
 	lineNum := 0
@@ -328,10 +342,9 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 			// CRITICAL: We search the FULL lineTrim to catch leaked tokens in logs,
 			// raw JSON, or unstructured text, bypassing the strict assignment rules.
 			matches := s.automaton.Search(lineTrim)
-
-			// Process line matches
+			hasMatches := len(matches) > 0
 			for _, m := range matches {
-				token := extractTokenFromOffset(lineTrim, m.Sig.Prefix, m.Offset)
+				token := extractTokenFromOffset(lineTrim, m.Sig, m.Offset)
 				if token == "" {
 					continue
 				}
@@ -385,10 +398,10 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 			}
 
 			// Process compMatches if needed
-			if len(matches) == 0 && cLen > 0 && cLen < vLen {
+			if !hasMatches && cLen > 0 && cLen < vLen {
 				compMatches := s.automaton.Search(compVal)
 				for _, m := range compMatches {
-					token := extractTokenFromOffset(compVal, m.Sig.Prefix, m.Offset)
+					token := extractTokenFromOffset(compVal, m.Sig, m.Offset)
 					if token == "" {
 						continue
 					}
@@ -441,14 +454,26 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 			}
 			if isB64 {
 				decLen := base64.StdEncoding.DecodedLen(len(compVal))
-				decBuf := make([]byte, decLen)
-				n, err := base64.StdEncoding.Decode(decBuf, compVal)
+				var decodedVal []byte
+				var err error
+				n := 0
+				if decLen <= len(decBuf) {
+					n, err = base64.StdEncoding.Decode(decBuf, compVal)
+					if err == nil {
+						decodedVal = decBuf[:n]
+					}
+				} else {
+					tempBuf := make([]byte, decLen)
+					n, err = base64.StdEncoding.Decode(tempBuf, compVal)
+					if err == nil {
+						decodedVal = tempBuf[:n]
+					}
+				}
 				if err == nil {
-					decodedVal := decBuf[:n]
 					if !s.opts.DisableTrie && s.automaton != nil {
 						decMatches := s.automaton.Search(decodedVal)
 						for _, m := range decMatches {
-							token := extractTokenFromOffset(decodedVal, m.Sig.Prefix, m.Offset)
+							token := extractTokenFromOffset(decodedVal, m.Sig, m.Offset)
 							if token == "" {
 								continue
 							}
@@ -510,7 +535,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 								FilePath:      filePath,
 								Line:          lineNum,
 								LineContent:   string(rawLine),
-								Token:         cleanToken(h.Token),
+								Token:         cleanToken(h.Token), // sentinel:ignore
 								Entropy:       h.Entropy,
 								DetectionTier: TierEntropy,
 								SignatureID:   fmt.Sprintf("high-entropy-%s", h.Kind),
@@ -532,40 +557,44 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 		// keyword, run entropy on each whitespace-delimited token. This catches
 		// Base64-encoded credentials in log files without relaxing the global parser.
 		if !s.opts.DisableEntropy && isLogIndicator(lineTrim) {
-			for _, tok := range bytes.Fields(lineTrim) {
-				if len(tok) < s.opts.MinSecretLength {
-					continue
-				}
-				tokStr := cleanToken(string(tok))
-				if len(tokStr) < s.opts.MinSecretLength {
-					continue
-				}
-				hits := entropy.Analyze([]byte(tokStr), 4.0, s.opts.MinSecretLength)
-				for _, h := range hits {
-					if s.isAllowed(h.Token) {
-						continue
-					}
-					decision := sentinelcontext.Real
-					if !s.opts.DisableContext {
-						decision = sentinelcontext.Classify(filePath, string(rawLine), h.Token)
-					}
-					if decision == sentinelcontext.Real {
-						newMatch := Finding{
-							FilePath:      filePath,
-							Line:          lineNum,
-							LineContent:   string(rawLine),
-							Token:         cleanToken(h.Token),
-							Entropy:       h.Entropy,
-							DetectionTier: TierEntropy,
-							SignatureID:   fmt.Sprintf("log-high-entropy-%s", h.Kind),
-							Description:   fmt.Sprintf("High-entropy %s in log auth context (entropy=%.2f)", strings.ToUpper(h.Kind), h.Entropy),
-							Severity:      entropySeverity(h.Entropy),
+			startTok := 0
+			for i := 0; i <= len(lineTrim); i++ {
+				if i == len(lineTrim) || lineTrim[i] == ' ' || lineTrim[i] == '\t' || lineTrim[i] == '\n' || lineTrim[i] == '\r' {
+					if i > startTok {
+						tok := lineTrim[startTok:i]
+						if len(tok) >= s.opts.MinSecretLength {
+							tokStr := cleanTokenBytes(tok)
+							if len(tokStr) >= s.opts.MinSecretLength {
+								hits := entropy.Analyze(tokStr, 4.0, s.opts.MinSecretLength)
+								for _, h := range hits {
+									if s.isAllowed(h.Token) {
+										continue
+									}
+									decision := sentinelcontext.Real
+									if !s.opts.DisableContext {
+										decision = sentinelcontext.Classify(filePath, string(rawLine), h.Token)
+									}
+									if decision == sentinelcontext.Real {
+										newMatch := Finding{
+											FilePath:      filePath,
+											Line:          lineNum,
+											LineContent:   string(rawLine),
+											Token:         cleanToken(h.Token), // sentinel:ignore
+											Entropy:       h.Entropy,
+											DetectionTier: TierEntropy,
+											SignatureID:   fmt.Sprintf("log-high-entropy-%s", h.Kind),
+											Description:   fmt.Sprintf("High-entropy %s in log auth context (entropy=%.2f)", strings.ToUpper(h.Kind), h.Entropy),
+											Severity:      entropySeverity(h.Entropy),
+										}
+										if !s.isDuplicateMatch(findings, newMatch) {
+											findings = append(findings, newMatch)
+										}
+									}
+								}
+							}
 						}
-						if s.isDuplicateMatch(findings, newMatch) {
-							continue
-						}
-						findings = append(findings, newMatch)
 					}
+					startTok = i + 1
 				}
 			}
 		}
@@ -672,10 +701,23 @@ func extractSecretValue(lineTrim []byte) (val []byte, isAssignment bool) {
 		if len(quoted) > 0 {
 			return quoted, true
 		}
-		// Bare token: strip trailing punctuation common in code.
-		fields := bytes.Fields(rhsStr)
-		if len(fields) > 0 {
-			bare := bytes.TrimRight(fields[0], `"'`+"`,;)")
+		// Bare token: find the first whitespace to isolate the first word
+		endIdx := -1
+		for i, b := range rhsStr {
+			if b == ' ' || b == '\t' || b == '\n' || b == '\r' {
+				endIdx = i
+				break
+			}
+		}
+		var firstWord []byte
+		if endIdx == -1 {
+			firstWord = rhsStr
+		} else {
+			firstWord = rhsStr[:endIdx]
+		}
+
+		if len(firstWord) > 0 {
+			bare := bytes.TrimRight(firstWord, `"'`+"`,;)")
 			if len(bare) > 0 {
 				return bare, true
 			}
@@ -817,14 +859,15 @@ func allQuotedLiterals(s []byte) []byte {
 
 // extractTokenFromOffset isolates the secret token from the string given the exact offset
 // where the pattern prefix ends.
-func extractTokenFromOffset(val []byte, prefix string, offset int) string {
+func extractTokenFromOffset(val []byte, sig *trie.Signature, offset int) string {
+	prefix := sig.Prefix
 	start := offset - len(prefix) + 1
 	if start < 0 || offset >= len(val) {
 		return ""
 	}
 
 	var after []byte
-	if containsAssignmentOrKeyword(prefix) {
+	if sig.IsAssignmentOrKeyword {
 		after = bytes.TrimSpace(val[offset+1:])
 	} else {
 		after = bytes.TrimSpace(val[start:])
@@ -846,48 +889,33 @@ func extractTokenFromOffset(val []byte, prefix string, offset int) string {
 		after = after[:qIdx]
 	}
 
-	fields := bytes.FieldsFunc(after, func(r rune) bool {
-		return r == ' ' || r == '\t' || r == '\n' || r == '\r' || r == '@' || r == '/' || r == '?' || r == '&'
-	})
-	if len(fields) == 0 {
+	// Optimize: find the end of the first field without allocating a full fields slice via bytes.FieldsFunc
+	endIdx := -1
+	for i, b := range after {
+		if b == ' ' || b == '\t' || b == '\n' || b == '\r' || b == '@' || b == '/' || b == '?' || b == '&' {
+			endIdx = i
+			break
+		}
+	}
+	var firstField []byte
+	if endIdx == -1 {
+		firstField = after
+	} else {
+		firstField = after[:endIdx]
+	}
+
+	cleaned := cleanTokenBytes(firstField)
+	if len(cleaned) == 0 {
 		return ""
 	}
-	tok := cleanToken(string(fields[0]))
-	if len(tok) == 0 {
-		return ""
-	}
-	return tok
+	return string(cleaned)
 }
 
-// containsAssignmentOrKeyword checks case-insensitively if prefix contains '=' or ':',
-// or the substrings "key" or "salt" without heap allocations.
-func containsAssignmentOrKeyword(s string) bool {
-	for i := 0; i < len(s); i++ {
-		b := s[i]
-		if b == '=' || b == ':' {
-			return true
-		}
-		if b == 'k' || b == 'K' {
-			if i+2 < len(s) {
-				b1 := s[i+1]
-				b2 := s[i+2]
-				if (b1 == 'e' || b1 == 'E') && (b2 == 'y' || b2 == 'Y') {
-					return true
-				}
-			}
-		}
-		if b == 's' || b == 'S' {
-			if i+3 < len(s) {
-				b1 := s[i+1]
-				b2 := s[i+2]
-				b3 := s[i+3]
-				if (b1 == 'a' || b1 == 'A') && (b2 == 'l' || b2 == 'L') && (b3 == 't' || b3 == 'T') {
-					return true
-				}
-			}
-		}
-	}
-	return false
+// cleanTokenBytes strips non-alphanumeric characters commonly found trailing or leading
+// in code, JSON, and string literals directly on byte slices (no allocation).
+func cleanTokenBytes(tok []byte) []byte {
+	tok = bytes.TrimSpace(tok)
+	return bytes.Trim(tok, "\\\"'`{}[](),;:.<>")
 }
 
 // cleanToken strips non-alphanumeric characters commonly found trailing or leading

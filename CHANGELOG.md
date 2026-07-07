@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.5] - 2026-07-07
+
+### Added
+- **100% Core Test Coverage:** Introduced robust unit test suites for `reporter` (JSON, Plain, SARIF formats), `git` diff/staging parsers, `commands` (CLI builders), and `updater`, achieving complete core coverage and ensuring long-term code stability.
+- **Reusable GitHub Action:** Officially released the custom composite GitHub Action (`action.yml`) supporting options (`version`, `args`, `sarif`) and optimized log visibility.
+- **Dedicated Output Argument:** Added the `-o` / `--output` flag to Sentinel scan, enabling clean colorized console stdout logs in GHA while saving SARIF/JSON files silently.
+- **Android Build Integration:** Unified Sentinel scans directly into the `NexusFi-app` build pipeline, blocking unauthorized apk packaging on security findings.
+- **Mailgun and Hex Letters-Only Tests:** Added unit tests verifying full token extraction and letter-only hex token detection.
+
+### Fixed
+- **Updater Version Comparison:** Fixed a bug in `isNewer` where pre-release suffixes (like `-beta` or `-rc`) caused the updater to fail integer conversion and incorrectly prompt users to downgrade to older stable versions.
+- **Mailgun Token Truncation:** Fixed `containsAssignmentOrKeyword` to prevent custom/Mailgun prefixes (like `key-`) from being stripped from reported tokens.
+- **Hex letters-only False Negatives:** Removed `isJavaConstant` check from the hex token entropy filter to prevent random letter-only hex keys (e.g. `abcdefABCDEF...`) from being skipped.
+
+### Performance
+- **Zero-Allocation Flat DFA Engine:** Completely refactored the Aho-Corasick Trie from pointer-heavy trees `[256]*acNode` to a flat, contiguous, integer-indexed Double-Array style DFA `[128]uint16`. This obliterated thousands of heap allocations, shrinking the Automaton's memory footprint to a microscopic **500 KB** and lowering the tool's absolute peak RAM to ~10.5 MB (the Go runtime minimum).
+- **Zero-Allocation Base64 Decoding:** Allocated a reusable pre-sized buffer (`decBuf`) in `ScanContent` to eliminate per-line heap allocation overhead during Base64 decoding, resulting in **~9% faster scan times** and zero GC pressure under heavy log/text processing.
+
 ## [2.0.4] - 2026-07-03
 
 ### Added

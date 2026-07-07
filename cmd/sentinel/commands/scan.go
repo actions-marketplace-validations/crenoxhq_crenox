@@ -31,6 +31,7 @@ func NewScanCmd() *cobra.Command {
 		recursive  bool
 		verbose    bool
 		history    bool
+		outputPath string
 	)
 
 	cmd := &cobra.Command{
@@ -56,6 +57,9 @@ Examples:
   
   # Scan specific configuration files
   sentinel scan config.yaml secrets.env
+
+  # Scan and save report directly to a SARIF file (keeps pretty terminal logs)
+  sentinel scan -f sarif -o sentinel.sarif .
   
   # Scan the entire Git commit tree history of the current repository
   sentinel scan --history .`,
@@ -64,7 +68,7 @@ Examples:
 			if !history && len(args) == 0 {
 				return fmt.Errorf("requires at least 1 arg(s), only received 0")
 			}
-			return runAdHocScan(args, configPath, format, recursive, verbose, history)
+			return runAdHocScan(args, configPath, format, recursive, verbose, history, outputPath)
 		},
 	}
 
@@ -73,11 +77,12 @@ Examples:
 	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "scan directories recursively")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
 	cmd.Flags().BoolVar(&history, "history", false, "scan entire git commit history")
+	cmd.Flags().StringVarP(&outputPath, "output", "o", "", "write scan report to file")
 
 	return cmd
 }
 
-func runAdHocScan(paths []string, configPath, format string, recursive, verbose, history bool) error {
+func runAdHocScan(paths []string, configPath, format string, recursive, verbose, history bool, outputPath string) error {
 	updateChan := updater.CheckForUpdateAsync()
 	startTime := time.Now()
 
@@ -87,6 +92,17 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 	}
 	if verbose {
 		cfg.Verbose = true
+	}
+
+	var fileReporter *reporter.Reporter
+	if outputPath != "" {
+		file, err := os.Create(outputPath)
+		if err != nil {
+			return fmt.Errorf("failed to create output file: %w", err)
+		}
+		defer file.Close()
+		fileReporter = reporter.New(file, reporter.ParseFormat(format))
+		format = "pretty"
 	}
 
 	// JSON is machine-readable output — write to stdout so it can be piped/redirected.
@@ -184,7 +200,7 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 
 		for bufScanner.Scan() {
 			line := bufScanner.Bytes()
-			
+
 			if bytes.HasPrefix(line, []byte("commit ")) {
 				processChunk()
 				currentCommit = string(line[7:])
@@ -193,27 +209,27 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 				}
 				continue
 			}
-			
+
 			if bytes.HasPrefix(line, []byte("diff --git")) {
 				processChunk()
 				continue
 			}
-			
+
 			if bytes.HasPrefix(line, []byte("+++ b/")) {
 				currentFile = string(line[6:])
 				continue
 			}
-			
+
 			if len(line) > 0 && line[0] == '+' && !bytes.HasPrefix(line, []byte("+++")) {
 				currentChunk = append(currentChunk, line[1:]...)
 				currentChunk = append(currentChunk, '\n')
 			}
 		}
-		
+
 		// If the scanner failed (e.g. token too long), we must close the pipe
 		// so git log gets SIGPIPE and exits, otherwise cmd.Wait() deadlocks.
 		stdout.Close()
-		
+
 		processChunk()
 		cmd.Wait()
 	} else {
@@ -262,7 +278,7 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		if numWorkers < 4 {
 			numWorkers = 4
 		}
-		
+
 		jobs := make(chan string, len(targets))
 		for _, t := range targets {
 			jobs <- t
@@ -324,11 +340,13 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		wg.Wait()
 	}
 
-
 	elapsed := time.Since(startTime)
 
 	if len(allFindings) == 0 {
 		rep.PrintClean(elapsed, scannedCount)
+		if fileReporter != nil {
+			fileReporter.PrintClean(elapsed, scannedCount)
+		}
 		select {
 		case msg := <-updateChan:
 			if msg != "" {
@@ -341,6 +359,10 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 
 	rep.PrintFindings(allFindings)
 	rep.PrintSummary(allFindings, elapsed, scannedCount)
+	if fileReporter != nil {
+		fileReporter.PrintFindings(allFindings)
+		fileReporter.PrintSummary(allFindings, elapsed, scannedCount)
+	}
 	os.Exit(1)
 	return nil
 }
