@@ -110,12 +110,12 @@ Measured on real-world repositories with Sentinel v2.0.5 against the two most po
 
 | Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.5** | **10 ms** | **10.5 MB** | **2** |
-| | Gitleaks v8.30.1 | 11 ms | 37.6 MB | 1 |
-| | TruffleHog v3.95.7 | 1.41 s | 209.2 MB | 3 |
-| truffleHogRegexes | **Sentinel v2.0.5** | **11 ms** | **10.8 MB** | **0** (Noise Filtered) |
-| | Gitleaks v8.30.1 | 74 ms | 37.2 MB | 1 |
-| | TruffleHog v3.95.7 | 1.50 s | 207.8 MB | 0 |
+| sample\_secrets | **Sentinel v2.0.5** | **40 ms** | **11.3 MB** | **2** |
+| | Gitleaks v8.30.1 | 220 ms | 15.0 MB | 1 |
+| | TruffleHog v3.95.7 | 11.41 s | 153.2 MB | 3 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **30 ms** | **11.5 MB** | **0** (Noise Filtered) |
+| | Gitleaks v8.30.1 | 210 ms | 16.0 MB | 1 |
+| | TruffleHog v3.95.7 | 7.13 s | 154.5 MB | 0 |
 
 </details>
 
@@ -124,12 +124,12 @@ Measured on real-world repositories with Sentinel v2.0.5 against the two most po
 
 | Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.5** | **103 ms** | **10.5 MB** | **8** |
-| | Gitleaks v8.30.1 | 19 ms | 36.7 MB | 5 |
-| | TruffleHog v3.95.7 | 1.50 s | 192.6 MB | 3 |
-| truffleHogRegexes | **Sentinel v2.0.5** | **43 ms** | **11.0 MB** | **5** |
-| | Gitleaks v8.30.1 | 81 ms | 37.6 MB | 6 |
-| | TruffleHog v3.95.7 | 1.48 s | 192.8 MB | 0 |
+| sample\_secrets | **Sentinel v2.0.5** | **140 ms** | **11.2 MB** | **8** |
+| | Gitleaks v8.30.1 | 160 ms | 16.0 MB | 5 |
+| | TruffleHog v3.95.7 | 9.05 s | 155.7 MB | 3 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **60 ms** | **11.6 MB** | **5** |
+| | Gitleaks v8.30.1 | 260 ms | 16.8 MB | 6 |
+| | TruffleHog v3.95.7 | 6.32 s | 152.9 MB | 0 |
 
 </details>
 
@@ -137,8 +137,8 @@ Measured on real-world repositories with Sentinel v2.0.5 against the two most po
 
 | Metric | vs Gitleaks | vs TruffleHog |
 |--------|-------------|---------------|
-| **Speed** | 6x to 11x faster | 60x to 115x faster |
-| **Memory** | 3.5x less RAM | 17x less RAM |
+| **Speed** | **1.1x to 7x faster** | **64x to 285x faster** |
+| **Memory** | **1.3x to 1.5x less RAM** | **12x to 14x less RAM** |
 | **Recall (Accuracy)** | Finds obfuscated & encoded secrets ignored by others | Superior noise filtering (Zero false positives) |
 
 ---
