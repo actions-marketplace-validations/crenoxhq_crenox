@@ -350,11 +350,7 @@ sentinel version
 ### Go Install
 
 ```bash
-# Install the latest stable release (recommended)
 go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
-
-# Or install the experimental beta version explicitly
-go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@v2.0.5-beta
 ```
 
 ### Build from Source
@@ -399,22 +395,11 @@ sentinel uninstall
 
 ### Native pre-commit Framework
 
-The framework will always default to stable releases. To use Sentinel with pre-commit, add the following to your `.pre-commit-config.yaml`:
-
 ```yaml
+# .pre-commit-config.yaml
 repos:
   - repo: https://github.com/sentinel-cli/sentinel
-    rev: v2.0.4
-    hooks:
-      - id: sentinel
-```
-
-To opt-in to the experimental beta version, pin it explicitly:
-
-```yaml
-repos:
-  - repo: https://github.com/sentinel-cli/sentinel
-    rev: v2.0.5-beta
+    rev: v2.0.5
     hooks:
       - id: sentinel
 ```
@@ -560,7 +545,7 @@ The easiest way to integrate Sentinel into your GitHub Actions workflow is by us
 - name: Run Sentinel Security Scan
   uses: sentinel-cli/sentinel@v2
   with:
-    version: 'latest' # Optional: version to use (e.g. 'v2.0.4' or 'v2.0.5-beta' for experimental features)
+    version: 'latest' # Optional: version to use (e.g. 'v2.0.5')
     args: '.'         # Optional: arguments to pass (e.g. "." or "--history .")
     sarif: 'true'     # Optional: set to 'true' to export findings as a SARIF report
 ```
