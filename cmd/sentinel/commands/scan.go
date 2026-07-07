@@ -200,7 +200,7 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 
 		for bufScanner.Scan() {
 			line := bufScanner.Bytes()
-			
+
 			if bytes.HasPrefix(line, []byte("commit ")) {
 				processChunk()
 				currentCommit = string(line[7:])
@@ -209,27 +209,27 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 				}
 				continue
 			}
-			
+
 			if bytes.HasPrefix(line, []byte("diff --git")) {
 				processChunk()
 				continue
 			}
-			
+
 			if bytes.HasPrefix(line, []byte("+++ b/")) {
 				currentFile = string(line[6:])
 				continue
 			}
-			
+
 			if len(line) > 0 && line[0] == '+' && !bytes.HasPrefix(line, []byte("+++")) {
 				currentChunk = append(currentChunk, line[1:]...)
 				currentChunk = append(currentChunk, '\n')
 			}
 		}
-		
+
 		// If the scanner failed (e.g. token too long), we must close the pipe
 		// so git log gets SIGPIPE and exits, otherwise cmd.Wait() deadlocks.
 		stdout.Close()
-		
+
 		processChunk()
 		cmd.Wait()
 	} else {
@@ -278,7 +278,7 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		if numWorkers < 4 {
 			numWorkers = 4
 		}
-		
+
 		jobs := make(chan string, len(targets))
 		for _, t := range targets {
 			jobs <- t
@@ -339,7 +339,6 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		}
 		wg.Wait()
 	}
-
 
 	elapsed := time.Since(startTime)
 

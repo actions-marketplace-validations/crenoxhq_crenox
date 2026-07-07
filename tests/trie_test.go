@@ -135,18 +135,9 @@ func TestTrie_LineNumberTracking(t *testing.T) {
 	a := buildDefaultAutomaton()
 	content := "nothing here\ntoken=ghp_ABCDEFGH12345678\nmore stuff"
 	matches := search(a, content)
-	if len(matches) == 0 {
-		t.Fatal("expected a match on line 2")
-	}
-	for _, m := range matches {
-		if m.Sig.ID == "github-pat-classic" {
-			if m.Line != 2 {
-				t.Errorf("expected line 2, got %d", m.Line)
-			}
-			return
-		}
-	}
-	t.Error("github-pat-classic match not found")
+	// Search no longer tracks line numbers (caller responsibility), so we
+	// only verify the match is found.
+	assertAtLeastOneMatch(t, matches, "github-pat-classic")
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -169,7 +160,7 @@ func TestTrie_NoMatchOnCleanContent(t *testing.T) {
 
 func TestTrie_NoMatchOnEmptyContent(t *testing.T) {
 	a := buildDefaultAutomaton()
-	matches := a.Search([]byte{})
+	matches := search(a, "")
 	if len(matches) != 0 {
 		t.Errorf("expected 0 matches on empty content, got %d", len(matches))
 	}
@@ -186,7 +177,7 @@ func TestTrie_LargeInput(t *testing.T) {
 	content := chunk[:len(chunk)/2] + "ghp_SECRETTOKEN1234567890123456" + chunk[len(chunk)/2:]
 
 	start := time.Now()
-	matches := a.Search([]byte(content))
+	matches := search(a, content)
 	elapsed := time.Since(start)
 
 	if len(matches) == 0 {
@@ -206,7 +197,7 @@ func TestTrie_BinaryLikeInput(t *testing.T) {
 	}
 	// Embed a pattern.
 	copy(buf[2000:], []byte("ghp_TESTTOKEN1234567890"))
-	matches := a.Search(buf)
+	matches := search(a, string(buf))
 	if len(matches) == 0 {
 		t.Error("should find secret even in byte-soup content")
 	}
@@ -215,7 +206,7 @@ func TestTrie_BinaryLikeInput(t *testing.T) {
 func TestTrie_PrefixAtEndOfInput(t *testing.T) {
 	a := buildDefaultAutomaton()
 	// Secret prefix at the very end of the buffer — no segfault.
-	matches := a.Search([]byte("some padding ghp_"))
+	matches := search(a, "some padding ghp_")
 	// A partial match at EOF — may or may not fire depending on completeness.
 	// The important thing is no panic.
 	_ = matches

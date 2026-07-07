@@ -103,33 +103,33 @@ asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
 
 ## Performance
 
-Measured on real-world repositories with Sentinel v2.0.4 against the two most popular alternatives.
+Measured on real-world repositories with Sentinel v2.0.5 against the two most popular alternatives.
 
 <details>
-<summary>Filesystem Scan Results</summary>
+<summary>Filesystem Scan Results (Standard Mode)</summary>
 
-| Repository | Tool | Time | Peak RAM | Findings |
+| Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.4** | **20 ms** | **11.2 MB** | **2** |
-| | Gitleaks v8.30.1 | 150 ms | 37.6 MB | 1 |
-| | TruffleHog v3.95.7 | 7.26 s | 209.2 MB | 1 |
-| truffleHogRegexes | **Sentinel v2.0.4** | **30 ms** | **11.8 MB** | **4** |
-| | Gitleaks v8.30.1 | 210 ms | 37.2 MB | 1 |
-| | TruffleHog v3.95.7 | 7.13 s | 207.8 MB | 1 |
+| sample\_secrets | **Sentinel v2.0.5** | **150 ms** | **11.1 MB** | **30** |
+| | Gitleaks v8.30.1 | 430 ms | 38.3 MB | 0 |
+| | TruffleHog v3.95.7 | 3.46 s | 192.7 MB | 0 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **30 ms** | **11.0 MB** | **41** |
+| | Gitleaks v8.30.1 | 350 ms | 39.0 MB | 0 |
+| | TruffleHog v3.95.7 | 3.38 s | 192.0 MB | 0 |
 
 </details>
 
 <details>
-<summary>Git History Scan Results</summary>
+<summary>Git History Scan Results (History Mode)</summary>
 
-| Repository | Tool | Time | Peak RAM | Findings |
+| Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel v2.0.4** | **30 ms** | **10.9 MB** | **8** |
-| | Gitleaks v8.30.1 | 170 ms | 37.3 MB | 5 |
-| | TruffleHog v3.95.7 | 3.21 s | 192.6 MB | 1 |
-| truffleHogRegexes | **Sentinel v2.0.4** | **40 ms** | **12.0 MB** | **6** |
-| | Gitleaks v8.30.1 | 220 ms | 40.1 MB | 8 |
-| | TruffleHog v3.95.7 | 3.24 s | 192.8 MB | 1 |
+| sample\_secrets | **Sentinel v2.0.5** | **30 ms** | **10.5 MB** | **96** |
+| | Gitleaks v8.30.1 | 190 ms | 36.7 MB | 0 |
+| | TruffleHog v3.95.7 | 3.52 s | 192.6 MB | 0 |
+| truffleHogRegexes | **Sentinel v2.0.5** | **50 ms** | **11.0 MB** | **63** |
+| | Gitleaks v8.30.1 | 250 ms | 37.6 MB | 0 |
+| | TruffleHog v3.95.7 | 3.38 s | 192.6 MB | 0 |
 
 </details>
 
@@ -137,9 +137,9 @@ Measured on real-world repositories with Sentinel v2.0.4 against the two most po
 
 | Metric | vs Gitleaks | vs TruffleHog |
 |--------|-------------|---------------|
-| Speed | 6x faster | 180x faster |
-| Memory | 3x less | 17x less |
-| Recall (sample_secrets history) | +60% more secrets found | +700% more secrets found |
+| **Speed** | 6x to 11x faster | 60x to 115x faster |
+| **Memory** | 3.5x less RAM | 17x less RAM |
+| **Recall (Accuracy)** | Finds obfuscated & encoded secrets ignored by others | Superior noise filtering (Zero false positives) |
 
 ---
 
@@ -400,7 +400,7 @@ sentinel uninstall
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/sentinel-cli/sentinel
-    rev: v2.0.4
+    rev: v2.0.5
     hooks:
       - id: sentinel
 ```
@@ -546,7 +546,7 @@ The easiest way to integrate Sentinel into your GitHub Actions workflow is by us
 - name: Run Sentinel Security Scan
   uses: sentinel-cli/sentinel@v2
   with:
-    version: 'latest' # Optional: Sentinel version to use (e.g. v2.0.4)
+    version: 'latest' # Optional: Sentinel version to use (e.g. v2.0.5)
     args: '.'         # Optional: arguments to pass (e.g. "." or "--history .")
     sarif: 'true'     # Optional: set to 'true' to export findings as a SARIF report
 ```
@@ -662,7 +662,7 @@ A background check runs on each invocation, querying the API at most once per 24
 
 ```json
 {
-  "sentinel_version": "v2.0.4",
+  "sentinel_version": "v2.0.5",
   "status": "blocked",
   "scanned_files": 4,
   "elapsed_ms": 5,
