@@ -205,6 +205,9 @@ var (
 func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 	var findings []Finding
 
+	// Allocate a reusable decoding buffer for Base64 (max line length 4096, so max decoded is 3072)
+	decBuf := make([]byte, 3072)
+
 	// We don't need a global map anymore since we process line by line.
 	lineNum := 0
 	start := 0
@@ -441,10 +444,22 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 			}
 			if isB64 {
 				decLen := base64.StdEncoding.DecodedLen(len(compVal))
-				decBuf := make([]byte, decLen)
-				n, err := base64.StdEncoding.Decode(decBuf, compVal)
+				var decodedVal []byte
+				var err error
+				n := 0
+				if decLen <= len(decBuf) {
+					n, err = base64.StdEncoding.Decode(decBuf, compVal)
+					if err == nil {
+						decodedVal = decBuf[:n]
+					}
+				} else {
+					tempBuf := make([]byte, decLen)
+					n, err = base64.StdEncoding.Decode(tempBuf, compVal)
+					if err == nil {
+						decodedVal = tempBuf[:n]
+					}
+				}
 				if err == nil {
-					decodedVal := decBuf[:n]
 					if !s.opts.DisableTrie && s.automaton != nil {
 						decMatches := s.automaton.Search(decodedVal)
 						for _, m := range decMatches {
@@ -860,34 +875,24 @@ func extractTokenFromOffset(val []byte, prefix string, offset int) string {
 }
 
 // containsAssignmentOrKeyword checks case-insensitively if prefix contains '=' or ':',
-// or the substrings "key" or "salt" without heap allocations.
+// or matches one of the WordPress custom key/salt definitions.
 func containsAssignmentOrKeyword(s string) bool {
 	for i := 0; i < len(s); i++ {
 		b := s[i]
 		if b == '=' || b == ':' {
 			return true
 		}
-		if b == 'k' || b == 'K' {
-			if i+2 < len(s) {
-				b1 := s[i+1]
-				b2 := s[i+2]
-				if (b1 == 'e' || b1 == 'E') && (b2 == 'y' || b2 == 'Y') {
-					return true
-				}
-			}
-		}
-		if b == 's' || b == 'S' {
-			if i+3 < len(s) {
-				b1 := s[i+1]
-				b2 := s[i+2]
-				b3 := s[i+3]
-				if (b1 == 'a' || b1 == 'A') && (b2 == 'l' || b2 == 'L') && (b3 == 't' || b3 == 'T') {
-					return true
-				}
-			}
-		}
 	}
-	return false
+	// Check for exact WordPress config keywords (case-insensitive)
+	upper := strings.ToUpper(s)
+	return strings.Contains(upper, "AUTH_KEY") ||
+		strings.Contains(upper, "SECURE_AUTH_KEY") ||
+		strings.Contains(upper, "LOGGED_IN_KEY") ||
+		strings.Contains(upper, "NONCE_KEY") ||
+		strings.Contains(upper, "AUTH_SALT") ||
+		strings.Contains(upper, "SECURE_AUTH_SALT") ||
+		strings.Contains(upper, "LOGGED_IN_SALT") ||
+		strings.Contains(upper, "NONCE_SALT")
 }
 
 // cleanToken strips non-alphanumeric characters commonly found trailing or leading
