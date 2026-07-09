@@ -227,6 +227,16 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 	var findings []Finding
 	isSource := isSourceCodeFile(filePath)
 	ext := strings.ToLower(filepath.Ext(filePath))
+	isNetrc := filepath.Base(filePath) == ".netrc"
+	isEntropyExcluded := ext == ".pem" || ext == ".rsa" || ext == ".crt" || ext == ".pub" ||
+		ext == ".json" || ext == ".nix" || ext == ".lock" || ext == ".sum" ||
+		ext == ".xml" || ext == ".html" || ext == ".md" || ext == ".txt" ||
+		ext == ".log" || ext == ".sql" || ext == ".yaml" || ext == ".yml" ||
+		ext == ".toml" || ext == ".gradle" || ext == ".kts" || ext == ".cmake" ||
+		ext == ".patch" || ext == ".diff" || ext == ".plist" || ext == ".editorconfig" ||
+		strings.Contains(filePath, "package-lock.json") ||
+		strings.Contains(filePath, "yarn.lock") ||
+		strings.Contains(filePath, "pnpm-lock.yaml")
 
 	// Retrieve a reusable decoding buffer from the pool
 	decBufPtr := b64Pool.Get().(*[]byte)
@@ -373,7 +383,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 						}
 					}
 				}
-				token := extractTokenFromOffset(lineTrim, m.Sig, m.Offset, isSource)
+				token := extractTokenFromOffset(lineTrim, m.Sig, m.Offset, isSource, isNetrc)
 				if token == "" {
 					continue
 				}
@@ -458,7 +468,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 							}
 						}
 					}
-					token := extractTokenFromOffset(compVal, m.Sig, m.Offset, isSource)
+					token := extractTokenFromOffset(compVal, m.Sig, m.Offset, isSource, isNetrc)
 					if token == "" {
 						continue
 					}
@@ -539,7 +549,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 									}
 								}
 							}
-							token := extractTokenFromOffset(decodedVal, m.Sig, m.Offset, isSource)
+							token := extractTokenFromOffset(decodedVal, m.Sig, m.Offset, isSource, isNetrc)
 							if token == "" {
 								continue
 							}
@@ -582,11 +592,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 			}
 		}
 
-		isEntropyExcluded := ext == ".pem" || ext == ".rsa" || ext == ".crt" || ext == ".pub" ||
-			ext == ".json" || ext == ".nix" || ext == ".lock" || ext == ".sum" ||
-			ext == ".xml" || ext == ".html" || ext == ".md" || ext == ".txt" ||
-			ext == ".editorconfig" || strings.Contains(filePath, "package-lock.json") ||
-			strings.Contains(filePath, "yarn.lock") || strings.Contains(filePath, "pnpm-lock.yaml")
+		// isEntropyExcluded is now pre-calculated at the file level
 
 		if !s.opts.DisableEntropy && !isEntropyExcluded {
 			// Entropy tier runs when the value has no spaces (looks like a single
@@ -1124,7 +1130,7 @@ func allQuotedLiterals(s []byte) []byte {
 	return bytes.Join(parts, []byte(" "))
 }
 
-func extractTokenFromOffset(val []byte, sig *trie.Signature, offset int, isSourceFile bool) string {
+func extractTokenFromOffset(val []byte, sig *trie.Signature, offset int, isSourceFile bool, isNetrc bool) string {
 	prefix := sig.Prefix
 	start := offset - len(prefix) + 1
 	if start < 0 || offset >= len(val) {
@@ -1218,7 +1224,7 @@ func extractTokenFromOffset(val []byte, sig *trie.Signature, offset int, isSourc
 	if len(cleaned) == 0 {
 		return ""
 	}
-	if strings.HasPrefix(sig.ID, "generic-") && isSourceFile {
+	if strings.HasPrefix(sig.ID, "generic-") && !isNetrc {
 		// Generic key must have assignment operator (= or :) between prefix and token.
 		idx := bytes.Index(val[offset+1:], cleaned)
 		if idx != -1 {
@@ -1275,7 +1281,11 @@ func isPlausibleSecretToken(token, prefix, sigID string, minLen int) bool {
 	if len(token) > 400 {
 		return false
 	}
-	if strings.HasPrefix(token, "http://") || strings.HasPrefix(token, "https://") || strings.HasPrefix(token, "//") || strings.HasPrefix(token, "www.") || strings.HasPrefix(token, "urn:") {
+	if strings.HasPrefix(token, "http://") || strings.HasPrefix(token, "https://") ||
+		strings.HasPrefix(token, "//") || strings.HasPrefix(token, "www.") ||
+		strings.HasPrefix(token, "urn:") || strings.HasPrefix(token, "vless://") ||
+		strings.HasPrefix(token, "vmess://") || strings.HasPrefix(token, "ss://") ||
+		strings.HasPrefix(token, "trojan://") || strings.HasPrefix(token, "shadowsocks://") {
 		if !strings.Contains(sigID, "-dsn") && !strings.Contains(sigID, "url-basic-auth") {
 			return false
 		}

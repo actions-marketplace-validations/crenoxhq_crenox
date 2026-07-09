@@ -353,7 +353,7 @@ func TestScanner_HexLettersOnly_Detected(t *testing.T) {
 	s := defaultScanner()
 	// abcdefABCDEFabcdefABCDEF is a 24-character hex string composed entirely of letters a-f and A-F.
 	// It should be detected as a hex token by the entropy analyzer and not skipped by isJavaConstant.
-	findings := scan(s, "secret.txt", `abcdefABCDEFabcdefABCDEF`)
+	findings := scan(s, "secret.conf", `abcdefABCDEFabcdefABCDEF`)
 	if len(findings) == 0 {
 		t.Error("expected finding for hex token composed entirely of letters a-f/A-F")
 	}
