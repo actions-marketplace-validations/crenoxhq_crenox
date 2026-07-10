@@ -29,6 +29,24 @@
 
 ---
 
+## What is Sentinel?
+
+**Sentinel** is a statically compiled, zero-dependency Git pre-commit hook and credentials scanner written in Go. It automatically blocks accidental commits of API keys, SSH private keys, cloud credentials, database connection strings, and other sensitive material before they enter version control.
+
+It is a lightweight, developer-friendly alternative to **Gitleaks** and **git-secrets**, with broader detection coverage and significantly lower resource usage.
+
+Sentinel uses a **three-tier detection pipeline** built for speed and near-zero false positives:
+
+| Tier | Engine | Purpose |
+|------|--------|---------|
+| 1 — PATTERN | Aho-Corasick automaton | Matches 80+ known secret signatures in O(n) time, zero allocations |
+| 2 — ENTROPY | Shannon entropy analysis | Catches unknown secrets by measuring information density |
+| 3 — CONTEXT | Context classifier | Suppresses false positives from comments, test files, and placeholders |
+
+A finding must survive all three tiers before it is reported.
+
+---
+
 ## Quick Start
 
 **Install and protect your repository in under 60 seconds:**
@@ -54,24 +72,6 @@ That is all. No configuration file required. No runtime dependencies. Works on L
 
 ---
 
-## What is Sentinel?
-
-**Sentinel** is a statically compiled, zero-dependency Git pre-commit hook and credentials scanner written in Go. It automatically blocks accidental commits of API keys, SSH private keys, cloud credentials, database connection strings, and other sensitive material before they enter version control.
-
-It is a lightweight, developer-friendly alternative to **Gitleaks** and **git-secrets**, with broader detection coverage and significantly lower resource usage.
-
-Sentinel uses a **three-tier detection pipeline** built for speed and near-zero false positives:
-
-| Tier | Engine | Purpose |
-|------|--------|---------|
-| 1 — PATTERN | Aho-Corasick automaton | Matches 80+ known secret signatures in O(n) time, zero allocations |
-| 2 — ENTROPY | Shannon entropy analysis | Catches unknown secrets by measuring information density |
-| 3 — CONTEXT | Context classifier | Suppresses false positives from comments, test files, and placeholders |
-
-A finding must survive all three tiers before it is reported.
-
----
-
 ## Terminal Demo
 
 ```bash
@@ -84,8 +84,8 @@ asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
 - [What is Sentinel](#what-is-sentinel)
+- [Quick Start](#quick-start)
 - [Performance](#performance)
 - [Why Sentinel](#why-sentinel)
 - [Architecture](#architecture)
