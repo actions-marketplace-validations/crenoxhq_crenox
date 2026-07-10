@@ -194,7 +194,7 @@ Measured on real-world repositories with Sentinel against the two most popular a
    Skips: tokens < min_secret_length (default 20), all-identical chars, Java-style identifiers
          |
   [Tier 3 — Context Filter  —  internal/context/context.go]
-   Checks (in order): test file path → commented line → UUID → version string
+   Checks (in order): test file path → commented line → unquoted RHS in source → UUID → version string
                     → env var placeholder → config placeholder → variable name → short alpha token
    Only Real decisions are forwarded to the reporter
          |
@@ -262,6 +262,7 @@ Pre-filters applied before entropy computation: Java-style identifiers (all lett
 | `SafePlaceholder` | Token matches `$VAR`, `${VAR}`, `<...>`, `[[...]]`, `{{...}}`, `${{...}}` |
 | `SafeUUID` | Token matches UUID v4 pattern `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` |
 | `SafeVersionString` | Token begins with `digit.digit.digit` |
+| `SafeSourceRHS` | Token on RHS of assignment in programming source files is bare/unquoted (e.g. Go struct types, function calls) |
 
 The scanner also rejects tokens that match a `printf`-style format verb, are identical to their signature prefix, contain regex metacharacters, or (for short prefixes ≤ 3 bytes) are pure PascalCase/CamelCase with no special characters.
 
@@ -738,6 +739,7 @@ Tier 3 automatically eliminates the vast majority of false positives. For persis
 | **Automatic Mock Value Filter** | Automatically ignores generic token rules if values contain mock/fake/test/dummy |
 | **Key File Entropy Bypass** | Skips raw line-by-line entropy checks on key extensions (`.pem`, `.key`, `.rsa`, `.crt`, `.pub`) |
 | **Function Call Protection** | Automatically filters out code function calls and methods containing parentheses |
+| **Source RHS Quote Enforcement** | Automatically skips unquoted RHS tokens (variables, struct types, function calls) in source code files |
 | `allowlist_patterns` in config | Known safe tokens used repeatedly across the codebase |
 | Move to test file path | Values in `tests/`, `testdata/`, `*_test.go`, `.md` are suppressed automatically |
 | `${ENV_VAR}` reference syntax | Replaced at runtime — not a hardcoded secret |

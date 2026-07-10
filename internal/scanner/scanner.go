@@ -311,7 +311,7 @@ func (s *Scanner) ScanContent(filePath string, content []byte) []Finding {
 		// "password=?", and variable names like "ACAccountSID" from being
 		// treated as secret values.
 
-		val, isAssignment := extractSecretValue(lineTrim)
+		val, isAssignment := extractSecretValue(lineTrim, isSource)
 		// We do not 'continue' here if val == nil, because we still want to run
 		// the Tier 1 Aho-Corasick automaton on the full line to catch leaks
 		// dumped directly in logs, text files, or raw JSON.
@@ -975,7 +975,7 @@ func matchesPathComponent(filePath, pattern string) bool {
 //   - Format strings like "token=%s" are never returned as values.
 //   - Variable names like "ACAccountSID" are never returned as values.
 //   - Only the actual RHS of an assignment or an inline literal is evaluated.
-func extractSecretValue(lineTrim []byte) (val []byte, isAssignment bool) {
+func extractSecretValue(lineTrim []byte, isSource bool) (val []byte, isAssignment bool) {
 	// ── Assignment branch ─────────────────────────────────────────────────────
 	// Detect ":=" (Go) or "=" (shell/env/YAML/generic) assignment operators.
 	// We must be careful not to trigger on "==" (comparison) or inside quotes.
@@ -986,6 +986,11 @@ func extractSecretValue(lineTrim []byte) (val []byte, isAssignment bool) {
 		quoted := firstQuotedLiteral(rhsStr)
 		if len(quoted) > 0 {
 			return quoted, true
+		}
+		if isSource {
+			// In programming source files, a bare (unquoted) RHS is a variable, type, or function call,
+			// never a raw secret string. Do not fall back to bare tokens.
+			return nil, true
 		}
 		// Bare token: find the first whitespace to isolate the first word
 		endIdx := -1

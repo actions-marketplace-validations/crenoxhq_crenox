@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **npm-token Base64 Rejection:** Relaxed the `npm-auth-key` validation regex to allow standard Base64 characters, fixing false positive collisions against all-uppercase snake-case constants with underscores (e.g. `CALIBRATION_PROMPTS_FILE`).
 - **Generic Snake Case Rejection:** Modified `isPlausibleSecretToken` to completely reject all-uppercase snake_case variables when evaluating generic or entropy-based signatures, significantly reducing noise in C and Python codebases.
 - **Multi-line Context Parsing:** Fixed `prevLineTrim` memory tracking in the main scanner loop to accurately retain the previous line's context across sequential loops, essential for robust `ClassifyWithPrev` decisions.
+- **Source Code Base64 False Positive Prevention:** Prevented high-entropy Base64 false positives in source code files by requiring generic assignments on the RHS to contain quoted literals, successfully bypassing bare unquoted code identifiers, Go struct names, and function calls from entropy checks.
+- And more minor fixes and improvements.
 
 
 ## [2.0.5] - 2026-07-07
