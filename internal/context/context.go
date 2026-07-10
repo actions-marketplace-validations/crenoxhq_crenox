@@ -49,7 +49,7 @@ var safeFileSegments = map[string]bool{
 var safeFileSuffixes = []string{
 	"_test.go", "_spec.rb", ".test.js", ".spec.js", ".test.ts", ".spec.ts",
 	".test.tsx", ".spec.tsx", ".test.jsx", ".spec.jsx",
-	"readme", ".md", ".rst",
+	"readme", ".md", ".rst", ".supp", ".po", ".pot", ".mo", ".xliff",
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -316,14 +316,51 @@ func Classify(filePath, lineContent, token, sigID string) Decision {
 
 	// ── Check 17: Constant IDs, UUIDs, and Hashes ─────────────────────────────
 	// Reject generic entropy matches when the variable name indicates it is an ID,
-	// UUID, GUID, hash, or message identifier.
+	// UUID, GUID, hash, or message identifier, or points to a path/link/email.
 	if sigID == "hex" || sigID == "base64" || strings.Contains(sigID, "high-entropy") {
 		if strings.Contains(lowerVarName, "id") || strings.Contains(lowerVarName, "uuid") ||
 			strings.Contains(lowerVarName, "guid") || strings.Contains(lowerVarName, "hash") ||
 			strings.Contains(lowerVarName, "md5") || strings.Contains(lowerVarName, "sha") ||
 			strings.Contains(lowerVarName, "sha256") || strings.Contains(lowerVarName, "sha512") ||
 			strings.Contains(lowerVarName, "sha1") || strings.Contains(lowerVarName, "checksum") ||
-			strings.Contains(lowerVarName, "fingerprint") || strings.Contains(lowerVarName, "digest") {
+			strings.Contains(lowerVarName, "fingerprint") || strings.Contains(lowerVarName, "digest") ||
+			strings.Contains(lowerVarName, "workspace") || strings.Contains(lowerVarName, "path") ||
+			strings.Contains(lowerVarName, "dir") || strings.Contains(lowerVarName, "folder") ||
+			strings.Contains(lowerVarName, "url") || strings.Contains(lowerVarName, "uri") ||
+			strings.Contains(lowerVarName, "host") || strings.Contains(lowerVarName, "link") ||
+			strings.Contains(lowerVarName, "email") {
+			return SafeVariableName
+		}
+	}
+
+	// ── Check 18: C++ Mangled Symbols ──────────────────────────────────────────
+	// Mangled C++ symbols (e.g. starting with _ZN or _ZNK) are long alphanumeric
+	// strings that look like high-entropy base64, but are just compiled function names.
+	if strings.HasPrefix(token, "_ZN") || strings.HasPrefix(token, "_ZNK") ||
+		strings.HasPrefix(token, "_ZTI") || strings.HasPrefix(token, "_ZTV") ||
+		strings.HasPrefix(token, "_ZTS") {
+		return SafeVariableName
+	}
+
+	// ── Check 19: Base64 Character Set Diversity ──────────────────────────────
+	// A real Base64-encoded random secret has high character diversity.
+	// If a Base64 entropy token contains ONLY lowercase letters or ONLY uppercase letters
+	// (no digits, no mixed case), it is mathematically a false positive.
+	if sigID == "base64" || strings.Contains(sigID, "high-entropy-base64") {
+		hasUpper := false
+		hasLower := false
+		hasDigitOrSymbol := false
+		for i := 0; i < len(token); i++ {
+			c := token[i]
+			if c >= 'a' && c <= 'z' {
+				hasLower = true
+			} else if c >= 'A' && c <= 'Z' {
+				hasUpper = true
+			} else if (c >= '0' && c <= '9') || c == '+' || c == '/' || c == '=' || c == '_' || c == '-' {
+				hasDigitOrSymbol = true
+			}
+		}
+		if !hasDigitOrSymbol && (!hasUpper || !hasLower) {
 			return SafeVariableName
 		}
 	}
@@ -439,6 +476,18 @@ func IsSuppressed(d Decision) bool {
 // extractVarName returns the portion of a line that represents the variable
 // name immediately preceding the token.
 func extractVarName(line, token string) string {
+	// If the token itself contains '=' or ':', it is a tight assignment (e.g. key=val)
+	firstOp := strings.IndexAny(token, "=:")
+	if firstOp > 0 && firstOp < len(token)-1 {
+		lhs := strings.TrimSpace(token[:firstOp])
+		for _, prefix := range []string{"let ", "const ", "var ", "local ", "ref ", "ref", "mut "} {
+			if strings.HasPrefix(strings.ToLower(lhs), prefix) {
+				lhs = lhs[len(prefix):]
+			}
+		}
+		return strings.TrimSpace(lhs)
+	}
+
 	idx := strings.LastIndex(line, token)
 	if idx < 0 {
 		return ""

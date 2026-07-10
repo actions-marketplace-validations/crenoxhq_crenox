@@ -5,9 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.6] - 2026-07-08
+## [2.0.6] - 2026-07-10
 
 ### Added
+- **Email & vCard Exclusion:** Added `.eml`, `.msg`, `.mbox`, `.vcf`, and `.ics` to default `exclude_extensions` to eliminate massive base64 blob false positives caused by encrypted emails and cryptographic metadata.
+- **Base64 Character Diversity (Check 19):** Implemented a mathematical heuristic in `Classify` to reject pure-lowercase or pure-uppercase high-entropy Base64 tokens, mathematically confirming the presence of true Base64 encoding.
+- **C++ Mangled Symbol Suppression (Check 18):** Added structural filtering for C++ mangled names (`_ZN`, `_ZNK`, `_ZTI`, `_ZTV`, `_ZTS`) preventing them from triggering false positive entropy alerts.
+- **Variable Name Contexts:** Expanded safe variable name heuristics (Check 17) to reject variables containing `workspace`, `path`, `dir`, `folder`, `url`, `uri`, `host`, `link`, or `email`.
+- **Translation File Safelist:** Added `.supp`, `.po`, `.pot`, `.mo`, and `.xliff` to the `safeFileSuffixes` context suppressor to prevent noise from translation hashes.
 - **Stable OTA Updates:** Upgraded the `sentinel update` logic to fetch stable releases by default and introduced a `--beta` flag for opting into pre-release updates.
 - **Fail-Fast Mode (`--fail-fast`):** Implemented `--fail-fast` across concurrent file scans and history traversals, aborting instantly upon identifying the first secret.
 - **Safe File Mode Handling:** Added strict non-regular file checking (`!info.Mode().IsRegular()`) to instantly skip named pipes, sockets, and character devices, eliminating terminal freezes.
@@ -26,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
+- **OOM Memory Exhaustion:** Engineered chunk-size bounding (capped by `MaxFileSizeBytes`) during history git-diff scans and enforced aggressive `debug.FreeOSMemory()` sweeps every 250 files, ensuring Sentinel survives multi-gigabyte repositories without running out of RAM.
+- **Tight Assignment Parser:** Refined `extractVarName` to recognize tight assignment operators inside the token boundary and strip declaration prefixes (`let`, `const`, `var`, `local`, `ref`, `mut`), ensuring precise LHS variable name isolation.
 - **Recursive Lock File Exclusion:** Upgraded exclude path glob matcher to run filename matching against the path's base name, ensuring files like `*.lock` and `go.sum` are correctly excluded from subdirectories recursively.
 - **Strict AWS Key Validators:** Hardened AWS MFA/STS token detection by adding strict regular expression validators for `ABIA` and `ASIA` prefixes, eliminating false positive alerts on common English word compounds (e.g. "with a bias on").
 - **GitHub Actions Placeholder Suppression:** Enabled full suppression of GitHub Actions `${{secrets.X}}` expressions by passing them intact through clean/trim operations and matching them against safe config placeholder patterns.

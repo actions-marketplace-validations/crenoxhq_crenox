@@ -324,7 +324,7 @@ A same-line annotation suppresses only that line. A comment-line annotation supp
 | **Cloudflare** | API Token (`CF_`) |
 | **HuggingFace** | API Token (`hf_`) |
 | **Shopify** | Custom App (`shpca_`), Private App (`shppa_`), Access Token (`shpat_`) |
-| **Generic** | `password=` `secret=` `api_key=` `token=` and their YAML/JSON colon variants |
+| **Generic** | `password=` `secret=` `api_key=` `token=` `auth=` and their YAML/JSON colon variants |
 | **Django** | `SECRET_KEY =` |
 | **WordPress** | `AUTH_KEY` `SECURE_AUTH_KEY` `LOGGED_IN_KEY` `NONCE_KEY` `AUTH_SALT` `SECURE_AUTH_SALT` `LOGGED_IN_SALT` `NONCE_SALT` |
 | **Crypto Wallets** | BIP-39 mnemonic (12/15/18/21/24 words, validated against 2048-word dictionary) |
@@ -491,6 +491,11 @@ exclude_extensions:
   - ".scss"
   - ".csv"
   - ".hex"
+  - ".eml"
+  - ".msg"
+  - ".mbox"
+  - ".vcf"
+  - ".ics"
 
 # Allowlist: findings whose token matches are silently ignored.
 # Supports exact strings and filepath.Match glob patterns.

@@ -183,8 +183,14 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		var currentChunk []byte
 		var currentFile string
 		var currentCommit string
+		var chunkTooLarge bool
 
 		processChunk := func() {
+			if chunkTooLarge {
+				currentChunk = nil
+				chunkTooLarge = false
+				return
+			}
 			if len(currentChunk) == 0 || currentFile == "" {
 				return
 			}
@@ -209,9 +215,11 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 					allFindings = append(allFindings, f)
 				}
 			}
-			currentChunk = currentChunk[:0]
 			if scannedCount%250 == 0 {
+				currentChunk = nil
 				debug.FreeOSMemory()
+			} else {
+				currentChunk = currentChunk[:0]
 			}
 		}
 
@@ -241,8 +249,15 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 			}
 
 			if len(line) > 0 && line[0] == '+' && !bytes.HasPrefix(line, []byte("+++")) {
-				currentChunk = append(currentChunk, line[1:]...)
-				currentChunk = append(currentChunk, '\n')
+				if !chunkTooLarge {
+					if int64(len(currentChunk)+len(line)-1) > cfg.MaxFileSizeBytes {
+						chunkTooLarge = true
+						currentChunk = nil
+					} else {
+						currentChunk = append(currentChunk, line[1:]...)
+						currentChunk = append(currentChunk, '\n')
+					}
+				}
 			}
 		}
 

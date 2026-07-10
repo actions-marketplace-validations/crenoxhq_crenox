@@ -174,7 +174,7 @@ func isJavaConstant(tok []byte) bool {
 // containsURL returns true when the line looks like it's a URL string
 // (starts with http, https, or //www) so we can skip entropy scoring entirely.
 func containsURL(line string) bool {
-	for i := 0; i+4 < len(line); i++ {
+	for i := 0; i < len(line); i++ {
 		if line[i] == 'h' && i+7 <= len(line) && (line[i:i+7] == "http://" || (i+8 <= len(line) && line[i:i+8] == "https://")) {
 			return true
 		}
