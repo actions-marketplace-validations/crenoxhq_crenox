@@ -110,12 +110,12 @@ Measured on real-world repositories with Sentinel against the two most popular a
 
 | Repository | Tool | Execution Time | Peak RAM | CPU% | Findings |
 |:---|:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel** | **135 ms** | **10.1 MB** | **30%** | **2** |
-| | Gitleaks v8.30.1 | 334 ms | 37.4 MB | 71% | 1 |
-| | TruffleHog v3.95.8 | 7,201 ms | 210.7 MB | 100% | 2 |
-| truffleHogRegexes | **Sentinel** | **144 ms** | **11.0 MB** | **42%** | **3** |
-| | Gitleaks v8.30.1 | 415 ms | 38.1 MB | 77% | 1 |
-| | TruffleHog v3.95.8 | 7,338 ms | 208.7 MB | 102% | 0 |
+| sample\_secrets | **Sentinel** | **171 ms** | **11.1 MB** | **32%** | **2** |
+| | Gitleaks v8.30.1 | 324 ms | 37.1 MB | 66% | 1 |
+| | TruffleHog v3.95.8 | 7.39 s | 204.7 MB | 98% | 2 |
+| truffleHogRegexes | **Sentinel** | **268 ms** | **11.5 MB** | **23%** | **3** |
+| | Gitleaks v8.30.1 | 452 ms | 37.7 MB | 73% | 1 |
+| | TruffleHog v3.95.8 | 6.69 s | 207.3 MB | 105% | 0 |
 
 </details>
 
@@ -124,12 +124,12 @@ Measured on real-world repositories with Sentinel against the two most popular a
 
 | Repository | Tool | Execution Time | Peak RAM | CPU% | Findings |
 |:---|:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel** | **280 ms** | **9.9 MB** | **31%** | **2** |
-| | Gitleaks v8.30.1 | 381 ms | 38.2 MB | 74% | 1 |
-| | TruffleHog v3.95.8 | 7,531 ms | 205.1 MB | 98% | 2 |
-| truffleHogRegexes | **Sentinel** | **309 ms** | **10.2 MB** | **31%** | **5** |
-| | Gitleaks v8.30.1 | 415 ms | 37.1 MB | 88% | 8 |
-| | TruffleHog v3.95.8 | 7,231 ms | 207.6 MB | 101% | 0 |
+| sample\_secrets | **Sentinel** | **395 ms** | **9.8 MB** | **22%** | **5** |
+| | Gitleaks v8.30.1 | 431 ms | 38.7 MB | 68% | 5 |
+| | TruffleHog v3.95.8 | 7.26 s | 206.2 MB | 99% | 2 |
+| truffleHogRegexes | **Sentinel** | **171 ms** | **10.1 MB** | **40%** | **5** |
+| | Gitleaks v8.30.1 | 248 ms | 39.7 MB | 142% | 8 |
+| | TruffleHog v3.95.8 | 6.79 s | 207.2 MB | 104% | 0 |
 
 </details>
 
@@ -137,8 +137,8 @@ Measured on real-world repositories with Sentinel against the two most popular a
 
 | Metric | vs Gitleaks | vs TruffleHog |
 |--------|-------------|---------------|
-| **Speed** | **1.1x to 7x faster** | **64x to 285x faster** |
-| **Memory** | **1.3x to 1.5x less RAM** | **12x to 14x less RAM** |
+| **Speed** | **1.1x to 1.9x faster** | **18x to 43x faster** |
+| **Memory** | **3.3x to 3.9x less RAM** | **18x to 21x less RAM** |
 | **Recall (Accuracy)** | Finds obfuscated & encoded secrets ignored by others | Superior noise filtering (Zero false positives) |
 
 ---
