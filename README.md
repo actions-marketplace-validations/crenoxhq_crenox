@@ -496,6 +496,7 @@ exclude_extensions:
   - ".mbox"
   - ".vcf"
   - ".ics"
+  - ".cache"
 
 # Allowlist: findings whose token matches are silently ignored.
 # Supports exact strings and filepath.Match glob patterns.

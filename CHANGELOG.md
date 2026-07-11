@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.6] - 2026-07-10
 
 ### Added
+- **Build Cache Exclusion:** Added `.cache` to the default `exclude_extensions` to eliminate low-entropy build metadata noise on C# and general compiled build directories.
 - **Mozilla SOPS Excluded Values (Check 20):** Bypassed high-entropy alerts on files and lines encrypted by Mozilla SOPS (wrapped in `ENC[...]`), eliminating false positives on GitOps-secured configurations.
 - **Email & vCard Exclusion:** Added `.eml`, `.msg`, `.mbox`, `.vcf`, and `.ics` to default `exclude_extensions` to eliminate massive base64 blob false positives caused by encrypted emails and cryptographic metadata.
 - **Base64 Character Diversity (Check 19):** Implemented a mathematical heuristic in `Classify` to reject pure-lowercase or pure-uppercase high-entropy Base64 tokens, mathematically confirming the presence of true Base64 encoding.

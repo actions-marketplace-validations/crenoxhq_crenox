@@ -110,7 +110,7 @@ func defaultConfig() Config {
 			".pdf", ".doc", ".docx", ".xls", ".xlsx",
 			".exe", ".dll", ".so", ".dylib", ".a", ".o",
 			".css", ".scss", ".csv", ".hex", ".eml", ".msg", ".mbox",
-			".vcf", ".ics",
+			".vcf", ".ics", ".cache",
 		},
 		AllowlistPatterns: []string{},
 		DisableTiers:      DisableTiersConfig{},
