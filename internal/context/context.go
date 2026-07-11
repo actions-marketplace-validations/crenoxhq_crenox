@@ -365,6 +365,12 @@ func Classify(filePath, lineContent, token, sigID string) Decision {
 		}
 	}
 
+	// ── Check 20: Mozilla SOPS Encrypted Values ──────────────────────────────
+	// Ignore values encrypted by Mozilla SOPS (wrapped in ENC[AES256_GCM,...])
+	if strings.Contains(lineContent, "ENC[") {
+		return SafePlaceholder
+	}
+
 	return Real
 }
 
