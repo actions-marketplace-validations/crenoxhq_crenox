@@ -38,7 +38,7 @@
       "description": "An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go.",
       "operatingSystem": "Linux, macOS, Windows, Android (Termux)",
       "applicationCategory": "DeveloperApplication",
-      "softwareVersion": "2.0.5",
+      "softwareVersion": "2.0.6",
       "codeRepository": "https://github.com/sentinel-cli/sentinel",
       "license": "https://github.com/sentinel-cli/sentinel/blob/main/LICENSE",
       "offers": {
@@ -82,6 +82,7 @@
                 <a href="#blog" class="nav-link">Blog</a>
                 <a href="#community" class="nav-link">Community</a>
                 <a href="research-2026-en.html" class="nav-link" style="font-weight: bold; color: var(--color-text-primary);">2026 Study</a>
+                <span class="nav-link" style="color: var(--color-text-muted); cursor: not-allowed;" title="Disclosures will be posted soon after patches are confirmed.">In the Wild (Soon)</span>
                 <a href="index-ar.html" class="lang-switch">العربية</a>
             </div>
         </div>
@@ -209,11 +210,17 @@
             <h2>Deployment and local setup</h2>
             <p>Sentinel is statically compiled to run natively across Linux, macOS, and Android/Termux. It does not require Go, Python, or additional runtime setups on the workstation.</p>
 
-            <h3>Option A: Pre-compiled Binaries (Recommended)</h3>
-            <p>The fastest way to install Sentinel without Go dependencies. Perfect for Termux/Android and Linux systems.</p>
+            <h3>Option A: Package Manager (Android / Termux)</h3>
+            <p>If you are on Android/Termux, you can install Sentinel directly via the Termux User Repository (TUR):</p>
+            <pre class="font-mono">
+pkg install tur-repo
+pkg install sentinel</pre>
+
+            <h3>Option B: Pre-compiled Binaries (Recommended)</h3>
+            <p>The fastest way to install Sentinel without dependencies. Perfect for Linux, macOS, and standalone Android setups. Download the corresponding architecture from our releases (e.g. <code>android-arm64</code>, <code>android-arm</code>, <code>linux-amd64</code>):</p>
             <pre class="font-mono">
 # 1. Download the target binary
-wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.5/sentinel-v2.0.5-linux-arm64 -O sentinel
+wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.6/sentinel-v2.0.6-android-arm64 -O sentinel
 
 # 2. Add execution permissions
 chmod +x sentinel
@@ -224,11 +231,11 @@ mv sentinel $PREFIX/bin/
 # 4. Verify deployment
 sentinel version</pre>
 
-            <h3>Option B: Go package installer</h3>
+            <h3>Option C: Go package installer</h3>
             <p>If you have Go installed on your path, fetch and compile the latest release directly:</p>
             <pre class="font-mono">go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest</pre>
 
-            <h3>Option C: Compile from source</h3>
+            <h3>Option D: Compile from source</h3>
             <p>Clone the repository and build manually using our Makefile configurations:</p>
             <pre class="font-mono">
 git clone https://github.com/sentinel-cli/sentinel.git

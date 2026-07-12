@@ -38,7 +38,7 @@
       "description": "An enterprise-grade, zero-dependency Git pre-commit secret detector written in Go.",
       "operatingSystem": "Linux, macOS, Windows, Android (Termux)",
       "applicationCategory": "DeveloperApplication",
-      "softwareVersion": "2.0.5",
+      "softwareVersion": "2.0.6",
       "codeRepository": "https://github.com/sentinel-cli/sentinel",
       "license": "https://github.com/sentinel-cli/sentinel/blob/main/LICENSE",
       "offers": {
@@ -82,6 +82,7 @@
                 <a href="#blog" class="nav-link">المدونة</a>
                 <a href="#community" class="nav-link">الدعم والمجتمع</a>
                 <a href="research-2026.html" class="nav-link" style="font-weight: bold; color: var(--color-text-primary);">دراسة ٢٠٢٦</a>
+                <span class="nav-link" style="color: var(--color-text-muted); cursor: not-allowed;" title="سيتم إضافة الاكتشافات قريباً بعد تأكيد إغلاق الثغرات.">في الميدان (قريباً)</span>
                 <a href="index.html" class="lang-switch">English</a>
             </div>
         </div>
@@ -209,11 +210,17 @@
             <h2>التثبيت والدمج المحلي</h2>
             <p>يتم تجميع سنتينل كملف ثنائي مستقل للعمل مباشرة على أنظمة Linux و macOS وأجهزة Android عبر بيئة Termux دون الحاجة لتثبيت لغة Go أو أي اعتماديات برمجية أخرى.</p>
 
-            <h3>الخيار أ: الملفات الثنائية الجاهزة (موصى به)</h3>
-            <p>أسرع طريقة لتثبيت الأداة مباشرة على نظامك دون الحاجة لبناء الملف من المصدر. مناسبة جداً لمستخدمي أندرويد و Termux.</p>
+            <h3>الخيار أ: مدير حزم أندرويد (Termux)</h3>
+            <p>إذا كنت تستخدم أندرويد عبر بيئة Termux، يمكنك تثبيت الأداة مباشرة عبر مستودع مستخدمي Termux (TUR):</p>
+            <pre class="font-mono">
+pkg install tur-repo
+pkg install sentinel</pre>
+
+            <h3>الخيار ب: الملفات الثنائية الجاهزة (موصى به)</h3>
+            <p>أسرع طريقة لتثبيت الأداة مباشرة على نظامك دون الحاجة لبناء الملف من المصدر. مناسبة لكافة معمارات المعالجات في Linux و macOS و Android (مثل <code>android-arm64</code> أو <code>linux-amd64</code>):</p>
             <pre class="font-mono">
 # 1. تنزيل الملف الثنائي المناسب لمعمارية جهازك
-wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.5/sentinel-v2.0.5-linux-arm64 -O sentinel
+wget https://github.com/sentinel-cli/sentinel/releases/download/v2.0.6/sentinel-v2.0.6-android-arm64 -O sentinel
 
 # 2. منح صلاحيات التشغيل للملف
 chmod +x sentinel
@@ -224,11 +231,11 @@ mv sentinel $PREFIX/bin/
 # 4. التحقق من نجاح التثبيت
 sentinel version</pre>
 
-            <h3>الخيار ب: مثبت حزم لغة Go</h3>
+            <h3>الخيار ج: مثبت حزم لغة Go</h3>
             <p>إذا كان لديك بيئة Go مهيأة في مسار نظامك، يمكنك تنزيل وبناء الأداة مباشرة بالأمر التالي:</p>
             <pre class="font-mono">go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest</pre>
 
-            <h3>الخيار ج: التجميع والبناء من المصدر</h3>
+            <h3>الخيار د: التجميع والبناء من المصدر</h3>
             <p>استنساخ المستودع وبناء الملف الثنائي يدوياً باستخدام أوامر Makefile المرفقة:</p>
             <pre class="font-mono">
 git clone https://github.com/sentinel-cli/sentinel.git

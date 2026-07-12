@@ -95,6 +95,7 @@ asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
 - [Usage](#usage)
 - [Output Reference](#output-reference)
 - [False Positive Handling](#false-positive-handling)
+- [In the Wild (Soon)](#)
 - [Running Tests](#running-tests)
 - [Contributing](#contributing)
 - [License](#license)
