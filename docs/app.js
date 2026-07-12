@@ -27,4 +27,24 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
 
+    // ─── Hamburger Menu Toggle ───────────────────────────────────────────
+    const menuToggle = document.getElementById('menuToggle');
+    const navBar = document.querySelector('.nav-bar');
+
+    if (menuToggle && navBar) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navBar.classList.toggle('active');
+        });
+
+        // Close menu when clicking any nav link
+        const navLinks = document.querySelectorAll('.nav-link, .lang-switch-btn');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navBar.classList.remove('active');
+            });
+        });
+    }
+
 });
