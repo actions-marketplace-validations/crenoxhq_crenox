@@ -1,4 +1,4 @@
-# VHS Tape Script for Sentinel Demo
+# VHS Tape Script for Crenox Demo
 # Run: vhs < demo.tape to generate demo.gif
 # --------------------------------------------------
 
@@ -15,14 +15,14 @@ Set Theme "Catppuccin Mocha"
 Set WindowBar Rounded
 Set Speed 1.0
 
-# 1. Initialize a new repo and install Sentinel
-Type "mkdir -p sentinel-demo && cd sentinel-demo && git init"
+# 1. Initialize a new repo and install Crenox
+Type "mkdir -p crenox-demo && cd crenox-demo && git init"
 Enter
 Sleep 1s
 Ctrl+L
 Sleep 1s
 
-Type "sentinel install"
+Type "crenox install"
 Enter
 Sleep 2s
 Ctrl+L
@@ -55,7 +55,7 @@ Ctrl+L
 Sleep 1s
 
 # 4. Use inline suppression to bypass the block
-Type "echo 'AWS_KEY = \"AKIAIOSFODNN7EXAMPLE\" # sentinel:ignore' > config.py"
+Type "echo 'AWS_KEY = \"AKIAIOSFODNN7EXAMPLE\" # crenox:ignore' > config.py"
 Enter
 Sleep 1.5s
 Type "git add config.py"
@@ -69,6 +69,6 @@ Sleep 4.5s
 Type "git log --oneline"
 Enter
 Sleep 2.5s
-Type "cd .. && rm -rf sentinel-demo"
+Type "cd .. && rm -rf crenox-demo"
 Enter
 Sleep 1.5s

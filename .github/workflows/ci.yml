@@ -1,4 +1,4 @@
-name: Sentinel CI
+name: Crenox CI
 
 on:
   push:
@@ -92,18 +92,18 @@ jobs:
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           LDFLAGS="-s -w \
-            -X github.com/sentinel-cli/sentinel/v2/pkg/version.Version=${VERSION} \
-            -X github.com/sentinel-cli/sentinel/v2/pkg/version.Commit=${COMMIT} \
-            -X github.com/sentinel-cli/sentinel/v2/pkg/version.Date=${DATE}"
+            -X github.com/crenoxhq/crenox/v2/pkg/version.Version=${VERSION} \
+            -X github.com/crenoxhq/crenox/v2/pkg/version.Commit=${COMMIT} \
+            -X github.com/crenoxhq/crenox/v2/pkg/version.Date=${DATE}"
           go build -trimpath -ldflags "${LDFLAGS}" \
-            -o dist/sentinel-${VERSION}-${{ matrix.goos }}-${{ matrix.goarch }}${{ steps.suffix.outputs.suffix }} \
-            ./cmd/sentinel
+            -o dist/crenox-${VERSION}-${{ matrix.goos }}-${{ matrix.goarch }}${{ steps.suffix.outputs.suffix }} \
+            ./cmd/crenox
 
       - name: Duplicate for Android/Termux
         if: matrix.goos == 'linux' && (matrix.goarch == 'arm64' || matrix.goarch == 'arm')
         run: |
           cd dist
-          for f in sentinel-*-linux-${{ matrix.goarch }}; do
+          for f in crenox-*-linux-${{ matrix.goarch }}; do
             if [ -f "$f" ]; then
               cp "$f" "${f/-linux-/-android-}"
             fi
@@ -112,7 +112,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sentinel-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: crenox-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/
 
   # ── Release ─────────────────────────────────────────────────────────────────
