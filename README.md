@@ -381,7 +381,7 @@ pkg install crenox
 **Via Pre-compiled Binary:**
 Download the corresponding `android-arm64` or `android-arm` binary from the [Releases page](https://github.com/crenoxhq/crenox/releases):
 ```bash
-# Replace <version>  e.g. v2.0.7
+# Replace <version>  e.g. v2.1.0
 wget https://github.com/crenoxhq/crenox/releases/download/<version>/crenox-<version>-android-arm64 -O crenox
 chmod +x crenox
 mv crenox $PREFIX/bin/
@@ -428,7 +428,7 @@ crenox uninstall
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/crenoxhq/crenox
-    rev: v2.0.7 # Replace with the latest release version
+    rev: v2.1.0 # Replace with the latest release version
     hooks:
       - id: crenox
 ```

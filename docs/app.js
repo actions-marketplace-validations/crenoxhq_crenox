@@ -47,4 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ─── Dynamic GitHub Release Version Fetcher ──────────────────────────
+    fetch('https://api.github.com/repos/crenoxhq/crenox/releases/latest')
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Network response not ok');
+        })
+        .then(data => {
+            const version = data.tag_name; // e.g. "v2.1.0"
+            document.querySelectorAll('.latest-version').forEach(el => {
+                el.textContent = version;
+            });
+        })
+        .catch(err => {
+            console.warn('Crenox: Could not dynamically resolve latest version from GitHub API, using fallback.', err);
+        });
+
 });

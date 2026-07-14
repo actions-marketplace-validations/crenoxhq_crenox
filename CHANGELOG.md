@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-14
+
+### Changed
+- **Rebranding Migration (Rebirth as Crenox):** Completed the full rebranding of the security tool from its legacy identity to `Crenox` across all packages, imports, configurations (`.crenox.yaml`), and GitHub workflows. This aligns the project's identity with the new corporate structure and registry domain names.
+- **Enterprise Web Presence & Documentation:** Migrated documentation, SEO metadata, and canonical links from legacy GitHub paths to the custom dedicated Vercel deployment domain `https://crenoxhq.vercel.app`.
+- **Command-line Interface Aesthetics:** Replaced legacy terminal output ASCII art with a custom, mathematically-aligned `CRENOX` block logo inside the reporter suite.
+- **Responsive Documentation Layout:** Redesigned the primary `README.md` header by wrapping the block ASCII logo in a responsive, non-distorting HTML block utilizing viewport-relative font styling (`font-size: min(1.1vw, 11px)`) to resolve long-standing layout skewing across mobile viewports and large desktop monitors.
+
+### Fixed
+- **Compilation Build Module Suffix:** Resolved a bug in the Make/shell cross-compilation script (`scripts/build.sh`) where the Go module path suffix `/v2` was missing from compiler ldflags, causing custom build-time version flags to fail compilation.
+
 ## [2.0.7] - 2026-07-13
 
 ### Added
