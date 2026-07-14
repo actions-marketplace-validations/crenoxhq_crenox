@@ -370,26 +370,13 @@ make build            # outputs to dist/crenox
 
 ### Android / Termux
 
-Crenox can be easily installed on Android using Termux.
+Crenox can be easily installed on Android using Termux via the Termux User Repository (TUR):
 
-**Via Termux User Repository (TUR):**
 ```bash
 pkg install tur-repo
 pkg install crenox
 ```
 
-**Via Pre-compiled Binary:**
-Download the corresponding `android-arm64` or `android-arm` binary from the [Releases page](https://github.com/crenoxhq/crenox/releases):
-```bash
-# Replace <version>  e.g. v2.1.0
-wget https://github.com/crenoxhq/crenox/releases/download/<version>/crenox-<version>-android-arm64 -O crenox
-chmod +x crenox
-mv crenox $PREFIX/bin/
-crenox version
-```
-
-> [!NOTE]
-> Crenox's built-in over-the-air (OTA) self-updater (`crenox update`) now fully supports Android/Termux devices directly, pulling and installing the latest compatible release from the GitHub releases page.
 
 ---
 
