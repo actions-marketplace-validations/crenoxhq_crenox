@@ -22,16 +22,16 @@ func NewUpdateCmd() *cobra.Command {
 	var allowBeta bool
 	cmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update Sentinel to the latest version",
-		Long: `Check GitHub for the latest release of Sentinel and update the current executable binary.
+		Short: "Update Crenox to the latest version",
+		Long: `Check GitHub for the latest release of Crenox and update the current executable binary.
 This command performs the following actions:
   1. Detects your operating system (OS) and architecture (e.g. linux/arm64, darwin/amd64).
   2. Queries the GitHub API for the latest release metadata.
   3. Downloads the matching binary payload and its SHA-256 checksum.
   4. Verifies the cryptographic integrity of the downloaded file.
-  5. Atomically replaces the active 'sentinel' executable with the new version.`,
+  5. Atomically replaces the active 'crenox' executable with the new version.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("Updating Sentinel to the latest version...")
+			fmt.Println("Updating Crenox to the latest version...")
 
 			// 1. Detect environment
 			goos := runtime.GOOS
@@ -63,7 +63,7 @@ This command performs the following actions:
 				},
 			}
 
-			resp, err := client.Get("https://api.github.com/repos/sentinel-cli/sentinel/releases")
+			resp, err := client.Get("https://api.github.com/repos/crenoxhq/crenox/releases")
 			if err != nil {
 				return fmt.Errorf("failed to reach github: %w", err)
 			}
@@ -130,13 +130,13 @@ This command performs the following actions:
 			// Fallback to go install if no raw binary is available.
 			if downloadURL == "" {
 				fmt.Printf("No matching pre-compiled binary found for %s/%s. Falling back to 'go install'...\n", goos, goarch)
-				c := exec.Command("go", "install", "github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest")
+				c := exec.Command("go", "install", "github.com/crenoxhq/crenox/v2/cmd/crenox@latest")
 				c.Stdout = os.Stdout
 				c.Stderr = os.Stderr
 				if err := c.Run(); err != nil {
 					return fmt.Errorf("update failed: %w", err)
 				}
-				fmt.Println("✔ Sentinel successfully updated to the latest version!")
+				fmt.Println("✔ Crenox successfully updated to the latest version!")
 				return nil
 			}
 
@@ -202,7 +202,7 @@ This command performs the following actions:
 				return fmt.Errorf("failed to safely replace binary (text file busy?): %w", err)
 			}
 
-			fmt.Printf("✔ Sentinel successfully updated to %s!\n", release.TagName)
+			fmt.Printf("✔ Crenox successfully updated to %s!\n", release.TagName)
 			return nil
 		},
 	}

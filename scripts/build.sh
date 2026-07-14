@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# build.sh — Sentinel production build script
+# build.sh — Crenox production build script
 # ─────────────────────────────────────────────────────────────────────────────
 # Usage:
 #   ./scripts/build.sh              # build for current platform
@@ -10,9 +10,9 @@
 
 set -euo pipefail
 
-MODULE="github.com/sentinel-cli/sentinel"
-CMD_PATH="${MODULE}/cmd/sentinel"
-BINARY="sentinel"
+MODULE="github.com/crenoxhq/crenox"
+CMD_PATH="${MODULE}/cmd/crenox"
+BINARY="crenox"
 DIST_DIR="dist"
 
 VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
@@ -29,7 +29,7 @@ LDFLAGS=(
 LDFLAGS_STR="${LDFLAGS[*]}"
 
 echo "┌────────────────────────────────────────────────────┐"
-echo "│  SENTINEL BUILD                                     │"
+echo "│  CRENOX BUILD                                     │"
 echo "│  Version : ${VERSION}"
 echo "│  Commit  : ${COMMIT}"
 echo "│  Date    : ${DATE}"

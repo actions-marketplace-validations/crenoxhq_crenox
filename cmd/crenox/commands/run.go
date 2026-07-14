@@ -9,16 +9,16 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/config"
-	"github.com/sentinel-cli/sentinel/v2/internal/git"
-	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
-	"github.com/sentinel-cli/sentinel/v2/internal/trie"
-	"github.com/sentinel-cli/sentinel/v2/internal/updater"
+	"github.com/crenoxhq/crenox/v2/internal/config"
+	"github.com/crenoxhq/crenox/v2/internal/git"
+	"github.com/crenoxhq/crenox/v2/internal/reporter"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
+	"github.com/crenoxhq/crenox/v2/internal/trie"
+	"github.com/crenoxhq/crenox/v2/internal/updater"
 )
 
-// NewRunCmd builds the `sentinel run` sub-command, which is the actual
-// pre-commit hook entry point.  Git calls this with no arguments; Sentinel
+// NewRunCmd builds the `crenox run` sub-command, which is the actual
+// pre-commit hook entry point.  Git calls this with no arguments; Crenox
 // reads the staged files from git's index and scans only the new content.
 func NewRunCmd() *cobra.Command {
 	var (
@@ -31,22 +31,22 @@ func NewRunCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run the pre-commit security scan (called by git hook)",
-		Long: `Execute the core Sentinel scanning pipeline against all staged files.
+		Long: `Execute the core Crenox scanning pipeline against all staged files.
 This command is designed to be run automatically by Git as a pre-commit hook (or via the Python 'pre-commit' framework).
 It extracts staged file contents, runs the Aho-Corasick trie matching, Shannon entropy analysis, and context validation.
 
 If findings with CRITICAL or HIGH severity are discovered, the commit is blocked (exits with code 1).
 If no secrets are found, or if they are ignored, the commit proceeds (exits with code 0).
 
-To bypass a finding on a specific line, add a comment containing '// sentinel:ignore' (or '# sentinel:ignore') on the preceding line or on the same line.
+To bypass a finding on a specific line, add a comment containing '// crenox:ignore' (or '# crenox:ignore') on the preceding line or on the same line.
 
-Custom rules, user-defined signatures, allowlist patterns, and file exclusions are resolved automatically from the '.sentinel.yaml' configuration file.`,
+Custom rules, user-defined signatures, allowlist patterns, and file exclusions are resolved automatically from the '.crenox.yaml' configuration file.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runScan(configPath, format, failFast, verbose)
 		},
 	}
 
-	cmd.Flags().StringVarP(&configPath, "config", "c", "", "path to .sentinel.yaml config file")
+	cmd.Flags().StringVarP(&configPath, "config", "c", "", "path to .crenox.yaml config file")
 	cmd.Flags().StringVarP(&format, "format", "f", "pretty", "output format: pretty|json|plain|sarif")
 	cmd.Flags().BoolVar(&failFast, "fail-fast", false, "stop after first finding")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose debug output")
@@ -77,7 +77,7 @@ func runScan(configPath, format string, failFast, verbose bool) error {
 
 	// ── Verify we are inside a git repository ────────────────────────────────
 	if !git.IsInsideWorkTree() {
-		return fmt.Errorf("not inside a git repository. Please navigate to a repository or use 'sentinel scan' for ad-hoc scanning")
+		return fmt.Errorf("not inside a git repository. Please navigate to a repository or use 'crenox scan' for ad-hoc scanning")
 	}
 
 	// ── List staged files ─────────────────────────────────────────────────────

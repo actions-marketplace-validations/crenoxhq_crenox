@@ -1,4 +1,4 @@
-// Package tests contains integration and benchmark tests for the Sentinel
+// Package tests contains integration and benchmark tests for the Crenox
 // detection pipeline.  Each test file imports the package under test directly
 // to exercise public APIs from the outside.
 //

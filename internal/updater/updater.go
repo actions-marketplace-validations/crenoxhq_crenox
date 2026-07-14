@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/v2/pkg/version"
+	"github.com/crenoxhq/crenox/v2/pkg/version"
 )
 
 const (
-	repoURL   = "https://api.github.com/repos/sentinel-cli/sentinel/releases/latest"
-	cacheFile = ".config/sentinel/last_check.json"
+	repoURL   = "https://api.github.com/repos/crenoxhq/crenox/releases/latest"
+	cacheFile = ".config/crenox/last_check.json"
 )
 
 type cacheData struct {
@@ -42,13 +42,13 @@ func CheckForUpdateAsync() <-chan string {
 		now := time.Now()
 		if now.Sub(cache.LastCheck) < 24*time.Hour {
 			if isNewer(cache.LatestVersion, version.Version) {
-				res <- fmt.Sprintf("Notice: Sentinel update (%s) is available! Run 'sentinel update' to upgrade.", cache.LatestVersion)
+				res <- fmt.Sprintf("Notice: Crenox update (%s) is available! Run 'crenox update' to upgrade.", cache.LatestVersion)
 			}
 			return
 		}
 
 		client := &http.Client{Timeout: 500 * time.Millisecond}
-		resp, err := client.Get("https://api.github.com/repos/sentinel-cli/sentinel/releases")
+		resp, err := client.Get("https://api.github.com/repos/crenoxhq/crenox/releases")
 		if err != nil {
 			return
 		}
@@ -86,7 +86,7 @@ func CheckForUpdateAsync() <-chan string {
 		os.WriteFile(cachePath, data, 0644)
 
 		if isNewer(cache.LatestVersion, version.Version) {
-			res <- fmt.Sprintf("Notice: Sentinel update (%s) is available! Run 'sentinel update' to upgrade.", cache.LatestVersion)
+			res <- fmt.Sprintf("Notice: Crenox update (%s) is available! Run 'crenox update' to upgrade.", cache.LatestVersion)
 		}
 	}()
 	return res

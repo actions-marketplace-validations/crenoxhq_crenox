@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# .sentinel.yaml — Sentinel Pre-Commit Hook Configuration
+# .crenox.yaml — Crenox Pre-Commit Hook Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 # Place this file in your repository root OR in your home directory (~/).
 # Repository-root config takes precedence over home-directory config.

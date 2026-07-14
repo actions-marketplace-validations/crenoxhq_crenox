@@ -1,6 +1,6 @@
 # Contributor License Agreement (CLA)
 
-Thank you for your interest in contributing to Sentinel! 
+Thank you for your interest in contributing to Crenox! 
 
 To protect the project and maintain our ability to offer dual-licensing (Open Source AGPL v3.0 and Commercial Licenses), we require all contributors to assign the copyright of their contributions to the repository owner.
 

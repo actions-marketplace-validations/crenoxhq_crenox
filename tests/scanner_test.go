@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
-	"github.com/sentinel-cli/sentinel/v2/internal/trie"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
+	"github.com/crenoxhq/crenox/v2/internal/trie"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -105,22 +105,22 @@ func TestScanner_InlineSuppression_DifferentForms(t *testing.T) {
 	}{
 		{
 			name: "Go/C style preceding",
-			content: `// sentinel:ignore
+			content: `// crenox:ignore
 credentialToken := "ghp_REALTOKEN1234567890abcdef"`,
 		},
 		{
 			name: "Shell/Python style preceding",
-			content: `# sentinel:ignore
+			content: `# crenox:ignore
 AWS_KEY="AKIAIOSFODNN7EXAMPLE1234"`,
 		},
 		{
 			name: "HTML/XML style preceding",
-			content: `<!-- sentinel:ignore -->
+			content: `<!-- crenox:ignore -->
 <secret>sk-ant-api03-1234567890abcdef123456789</secret>`,
 		},
 		{
 			name:    "Same-line trailing comment",
-			content: `credentialToken := "ghp_REALTOKEN1234567890abcdef" // sentinel:ignore`,
+			content: `credentialToken := "ghp_REALTOKEN1234567890abcdef" // crenox:ignore`,
 		},
 	}
 
@@ -134,7 +134,7 @@ AWS_KEY="AKIAIOSFODNN7EXAMPLE1234"`,
 	}
 
 	t.Run("Same-line comment does not suppress next line", func(t *testing.T) {
-		content := `token1 := "ghp_REALTOKEN1234567890abcdef" // sentinel:ignore
+		content := `token1 := "ghp_REALTOKEN1234567890abcdef" // crenox:ignore
 token2 := "ghp_REALTOKEN0987654321fedcba"`
 		findings := scan(s, "testfile", content)
 		if len(findings) != 1 {

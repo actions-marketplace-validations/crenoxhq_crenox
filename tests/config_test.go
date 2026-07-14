@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/config"
+	"github.com/crenoxhq/crenox/v2/internal/config"
 )
 
 func TestConfigLoad_Default(t *testing.T) {
@@ -26,7 +26,7 @@ func TestConfigLoad_Default(t *testing.T) {
 func TestConfigLoad_File(t *testing.T) {
 	// Create a temporary config file
 	tmpDir := t.TempDir()
-	cfgPath := filepath.Join(tmpDir, ".sentinel.yaml")
+	cfgPath := filepath.Join(tmpDir, ".crenox.yaml")
 
 	yamlContent := `
 entropy_threshold: 3.2

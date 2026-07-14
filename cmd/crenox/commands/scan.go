@@ -16,14 +16,14 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/config"
-	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
-	"github.com/sentinel-cli/sentinel/v2/internal/trie"
-	"github.com/sentinel-cli/sentinel/v2/internal/updater"
+	"github.com/crenoxhq/crenox/v2/internal/config"
+	"github.com/crenoxhq/crenox/v2/internal/reporter"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
+	"github.com/crenoxhq/crenox/v2/internal/trie"
+	"github.com/crenoxhq/crenox/v2/internal/updater"
 )
 
-// NewScanCmd builds the `sentinel scan` sub-command for ad-hoc scanning
+// NewScanCmd builds the `crenox scan` sub-command for ad-hoc scanning
 // of arbitrary files or directories outside of the git hook workflow.
 func NewScanCmd() *cobra.Command {
 	var (
@@ -49,22 +49,22 @@ Scanning Modes:
   2. Git History (--history):
      Audits the entire Git commit log history of the repository. Findings will be prefixed with the triggering Git commit hash (e.g. 5906dee:config/app.json).
 
-You can bypass false positives on specific lines using '// sentinel:ignore' comments.
+You can bypass false positives on specific lines using '// crenox:ignore' comments.
 
-Custom rules, user-defined signatures, allowlist patterns, and file exclusions are resolved automatically from the '.sentinel.yaml' configuration file.
+Custom rules, user-defined signatures, allowlist patterns, and file exclusions are resolved automatically from the '.crenox.yaml' configuration file.
 
 Examples:
   # Scan a folder recursively
-  sentinel scan -r ./src
+  crenox scan -r ./src
   
   # Scan specific configuration files
-  sentinel scan config.yaml secrets.env
+  crenox scan config.yaml secrets.env
 
   # Scan and save report directly to a SARIF file (keeps pretty terminal logs)
-  sentinel scan -f sarif -o sentinel.sarif .
+  crenox scan -f sarif -o crenox.sarif .
   
   # Scan the entire Git commit tree history of the current repository
-  sentinel scan --history .`,
+  crenox scan --history .`,
 		Args: cobra.ArbitraryArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if !history && len(args) == 0 {
@@ -74,7 +74,7 @@ Examples:
 		},
 	}
 
-	cmd.Flags().StringVarP(&configPath, "config", "c", "", "path to .sentinel.yaml config file")
+	cmd.Flags().StringVarP(&configPath, "config", "c", "", "path to .crenox.yaml config file")
 	cmd.Flags().StringVarP(&format, "format", "f", "pretty", "output format: pretty|json|plain|sarif")
 	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "scan directories recursively")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
@@ -276,7 +276,7 @@ func runAdHocScan(paths []string, configPath, format string, recursive, verbose,
 		for _, p := range paths {
 			info, err := os.Stat(p)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "sentinel: the path %q does not exist or is inaccessible\n", p)
+				fmt.Fprintf(os.Stderr, "crenox: the path %q does not exist or is inaccessible\n", p)
 				continue
 			}
 			absP, err := filepath.Abs(p)

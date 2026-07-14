@@ -1,10 +1,10 @@
-// Package main implements the Sentinel CLI — a `cobra`-based command dispatcher
+// Package main implements the Crenox CLI — a `cobra`-based command dispatcher
 // that exposes:
 //
-//	sentinel run     — the core pre-commit hook (default)
-//	sentinel install — install the hook into a git repository
-//	sentinel version — print build metadata
-//	sentinel scan    — scan an arbitrary file or directory (ad-hoc mode)
+//	crenox run     — the core pre-commit hook (default)
+//	crenox install — install the hook into a git repository
+//	crenox version — print build metadata
+//	crenox scan    — scan an arbitrary file or directory (ad-hoc mode)
 package main
 
 import (
@@ -14,8 +14,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-cli/sentinel/v2/cmd/sentinel/commands"
-	"github.com/sentinel-cli/sentinel/v2/pkg/version"
+	"github.com/crenoxhq/crenox/v2/cmd/crenox/commands"
+	"github.com/crenoxhq/crenox/v2/pkg/version"
 )
 
 func init() {
@@ -35,9 +35,9 @@ func init() {
 
 func main() {
 	root := &cobra.Command{
-		Use:   "sentinel",
-		Short: "Sentinel — enterprise-grade Git pre-commit secret detector",
-		Long: `Sentinel is an ultra-lightweight, modular Git pre-commit security hook
+		Use:   "crenox",
+		Short: "Crenox — enterprise-grade Git pre-commit secret detector",
+		Long: `Crenox is an ultra-lightweight, modular Git pre-commit security hook
 that prevents accidental commits of API keys, SSH private keys, passwords,
 and other sensitive data using a three-tier detection pipeline:
 
@@ -45,19 +45,19 @@ and other sensitive data using a three-tier detection pipeline:
   Tier 2 (ENTROPY)  — Shannon entropy analysis for unknown/novel secrets
   Tier 3 (CONTEXT)  — Context-aware false-positive suppression
   
-  Inline Suppression — Append '// sentinel:ignore' to the preceding line or at the end of the line to ignore false positives.
+  Inline Suppression — Append '// crenox:ignore' to the preceding line or at the end of the line to ignore false positives.
   Framework Support  — Compatible with the Python 'pre-commit' ecosystem.
   CI/CD Integration  — Official GitHub Actions support with native SARIF output.
 
 CLI Commands & Flags:
 
-  sentinel run                  Run the core pre-commit scan on staged files.
-      -c, --config string       Path to .sentinel.yaml config file.
+  crenox run                  Run the core pre-commit scan on staged files.
+      -c, --config string       Path to .crenox.yaml config file.
       -f, --format string       Output format: pretty|json|plain|sarif.
       --fail-fast               Stop after the first finding.
       -v, --verbose             Enable verbose debug output.
 
-  sentinel scan [path...]       Ad-hoc mode to scan arbitrary files or directories.
+  crenox scan [path...]       Ad-hoc mode to scan arbitrary files or directories.
       -c, --config string       Path to config file.
       -f, --format string       Output format: pretty|json|plain|sarif.
       -o, --output string       Write scan report directly to a file (preserving pretty logs).
@@ -65,15 +65,15 @@ CLI Commands & Flags:
       -v, --verbose             Enable verbose output.
       --history                 Deep scan the entire git commit history.
 
-  sentinel install              Install the pre-commit hook into a repository.
+  crenox install              Install the pre-commit hook into a repository.
       --global                  Install globally via git core.hooksPath.
       --repo string             Path to the git repository root.
       -f, --force               Overwrite an existing hook without prompting.
 
-  sentinel uninstall            Completely remove Sentinel, binary, and all hooks.
-  sentinel update               Update Sentinel to the latest stable version.
+  crenox uninstall            Completely remove Crenox, binary, and all hooks.
+  crenox update               Update Crenox to the latest stable version.
       --beta                    Allow updating to pre-release (beta) versions.
-  sentinel version              Print Sentinel version and build metadata.
+  crenox version              Print Crenox version and build metadata.
 
 Developed by: Khaled Hani | Contact: https://t.me/A245F`,
 		Version:       version.Version,
@@ -81,8 +81,8 @@ Developed by: Khaled Hani | Contact: https://t.me/A245F`,
 		SilenceUsage:  true,
 	}
 
-	root.SetVersionTemplate(`Sentinel version
-{{printf "sentinel %s" .Version}} (commit: ` + version.Commit + `, built: ` + version.Date + `)
+	root.SetVersionTemplate(`Crenox version
+{{printf "crenox %s" .Version}} (commit: ` + version.Commit + `, built: ` + version.Date + `)
 Developed by: Khaled Hani | Contact: https://t.me/A245F
 `)
 
@@ -96,7 +96,7 @@ Developed by: Khaled Hani | Contact: https://t.me/A245F
 	)
 
 	if err := root.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "sentinel: error:", err)
+		fmt.Fprintln(os.Stderr, "crenox: error:", err)
 		os.Exit(1)
 	}
 }

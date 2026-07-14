@@ -1,4 +1,4 @@
-// Package reporter handles all output rendering for the Sentinel pre-commit
+// Package reporter handles all output rendering for the Crenox pre-commit
 // hook.  It supports three output modes:
 //
 //   - Pretty (default): ANSI-coloured, human-friendly terminal output with
@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
-	"github.com/sentinel-cli/sentinel/v2/pkg/version"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
+	"github.com/crenoxhq/crenox/v2/pkg/version"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -93,13 +93,13 @@ var (
 // Public reporting methods
 // ──────────────────────────────────────────────────────────────────────────────
 
-// PrintHeader prints the Sentinel startup banner.
+// PrintHeader prints the Crenox startup banner.
 func (r *Reporter) PrintHeader() {
 	switch r.format {
 	case FormatJSON, FormatSARIF:
 		// No header in machine-readable modes.
 	case FormatPlain:
-		fmt.Fprintf(r.w, "sentinel %s — pre-commit security scan\n", version.Version)
+		fmt.Fprintf(r.w, "crenox %s — pre-commit security scan\n", version.Version)
 		fmt.Fprintln(r.w, strings.Repeat("-", 60))
 	default:
 		r.prettyHeader()
@@ -145,11 +145,11 @@ func (r *Reporter) PrintClean(elapsed time.Duration, scannedFiles int) {
 	case FormatSARIF:
 		r.sarifSummary(nil)
 	case FormatPlain:
-		fmt.Fprintf(r.w, "sentinel: clean — %d file(s) scanned in %s\n",
+		fmt.Fprintf(r.w, "crenox: clean — %d file(s) scanned in %s\n",
 			scannedFiles, elapsed.Round(time.Millisecond))
 	default:
 		fmt.Fprintln(r.w)
-		successColor.Fprintf(r.w, "  ✔ SENTINEL CLEAN")
+		successColor.Fprintf(r.w, "  ✔ CRENOX CLEAN")
 		dimColor.Fprintf(r.w, "  —  %d file(s) scanned in %s\n",
 			scannedFiles, elapsed.Round(time.Microsecond))
 		fmt.Fprintln(r.w)
@@ -167,7 +167,7 @@ func (r *Reporter) PrintSkipped(filePath, reason string) {
 // Pretty-format internals
 // ──────────────────────────────────────────────────────────────────────────────
 
-const sentinelLogo = `
+const crenoxLogo = `
  ███████╗███████╗███╗   ██╗████████╗██╗███╗   ██╗███████╗██╗     
  ██╔════╝██╔════╝████╗  ██║╚══██╔══╝██║████╗  ██║██╔════╝██║     
  ███████╗█████╗  ██╔██╗ ██║   ██║   ██║██╔██╗ ██║█████╗  ██║     
@@ -176,7 +176,7 @@ const sentinelLogo = `
  ╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝`
 
 func (r *Reporter) prettyHeader() {
-	dimColor.Fprintln(r.w, sentinelLogo)
+	dimColor.Fprintln(r.w, crenoxLogo)
 	dimColor.Fprintf(r.w, "  Pre-Commit Security Hook  %s  %s\n\n",
 		dimColor.Sprint("│"), version.Version)
 }
@@ -216,7 +216,7 @@ func (r *Reporter) prettySummary(findings []scanner.Finding, elapsed time.Durati
 	critical, high, medium, low := countBySeverity(findings)
 	fmt.Fprintln(r.w)
 	fmt.Fprintln(r.w, strings.Repeat("─", 68))
-	headerColor.Fprintf(r.w, "  SENTINEL SCAN COMPLETE\n")
+	headerColor.Fprintf(r.w, "  CRENOX SCAN COMPLETE\n")
 	fmt.Fprintf(r.w, "  Files scanned : %d\n", scanned)
 	fmt.Fprintf(r.w, "  Elapsed       : %s\n", elapsed.Round(time.Microsecond))
 	fmt.Fprintf(r.w, "  Findings      : ")
@@ -232,12 +232,12 @@ func (r *Reporter) prettySummary(findings []scanner.Finding, elapsed time.Durati
 	fmt.Fprintln(r.w)
 
 	errorColor.Fprintf(r.w, "  ✘ COMMIT BLOCKED — remove the secrets above and try again.\n")
-	dimColor.Fprintf(r.w, "    Hint: If this is a false positive, append '// sentinel:ignore' to the preceding line or at the end of the line.\n\n")
+	dimColor.Fprintf(r.w, "    Hint: If this is a false positive, append '// crenox:ignore' to the preceding line or at the end of the line.\n\n")
 }
 
 func (r *Reporter) plainSummary(findings []scanner.Finding, elapsed time.Duration, scanned int) {
 	critical, high, medium, low := countBySeverity(findings)
-	fmt.Fprintf(r.w, "sentinel: %d finding(s) — CRITICAL:%d HIGH:%d MEDIUM:%d LOW:%d — %d file(s) in %s\n",
+	fmt.Fprintf(r.w, "crenox: %d finding(s) — CRITICAL:%d HIGH:%d MEDIUM:%d LOW:%d — %d file(s) in %s\n",
 		len(findings), critical, high, medium, low, scanned, elapsed.Round(time.Millisecond))
 	fmt.Fprintln(r.w, "commit blocked")
 }
@@ -259,7 +259,7 @@ type jsonFinding struct {
 }
 
 type jsonReport struct {
-	Version      string        `json:"sentinel_version"`
+	Version      string        `json:"crenox_version"`
 	Status       string        `json:"status"`
 	ScannedFiles int           `json:"scanned_files"`
 	ElapsedMs    int64         `json:"elapsed_ms"`
@@ -480,9 +480,9 @@ func (r *Reporter) sarifSummary(findings []scanner.Finding) {
 			{
 				Tool: sarifTool{
 					Driver: sarifDriver{
-						Name:           "Sentinel",
+						Name:           "Crenox",
 						Version:        version.Version,
-						InformationURI: "https://github.com/sentinel-cli/sentinel",
+						InformationURI: "https://github.com/crenoxhq/crenox",
 						Rules:          rules,
 					},
 				},

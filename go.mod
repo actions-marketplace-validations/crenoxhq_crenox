@@ -1,4 +1,4 @@
-module github.com/sentinel-cli/sentinel/v2
+module github.com/crenoxhq/crenox/v2
 
 go 1.22
 

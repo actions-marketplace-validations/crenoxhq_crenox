@@ -1,11 +1,11 @@
-# Sentinel — Git Pre-Commit Secret Detector
+# Crenox — Git Pre-Commit Secret Detector
 # Makefile for development convenience
 # ─────────────────────────────────────────────────────────────────────────────
 
-BINARY      := sentinel
+BINARY      := crenox
 DIST_DIR    := dist
-CMD_PATH    := ./cmd/sentinel
-MODULE      := github.com/sentinel-cli/sentinel/v2
+CMD_PATH    := ./cmd/crenox
+MODULE      := github.com/crenoxhq/crenox/v2
 
 VERSION     := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT      := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
@@ -20,7 +20,7 @@ LDFLAGS := -s -w \
 
 all: build
 
-## build: Build sentinel for the current platform
+## build: Build crenox for the current platform
 build:
 	@echo "Building $(BINARY) $(VERSION)..."
 	@mkdir -p $(DIST_DIR)
@@ -48,10 +48,10 @@ lint:
 	@command -v staticcheck >/dev/null 2>&1 || go install honnef.co/go/tools/cmd/staticcheck@latest
 	@staticcheck ./...
 
-## install: Install sentinel binary to GOPATH/bin
+## install: Install crenox binary to GOPATH/bin
 install:
 	@CGO_ENABLED=0 go install -trimpath -ldflags "$(LDFLAGS)" $(CMD_PATH)
-	@echo "✔ sentinel installed to $$(go env GOPATH)/bin/sentinel"
+	@echo "✔ crenox installed to $$(go env GOPATH)/bin/crenox"
 
 ## hook: Install the pre-commit hook into the current repository
 hook: build

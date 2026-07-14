@@ -1,4 +1,4 @@
-name: 'Sentinel Git Secrets Scanner'
+name: 'Crenox Git Secrets Scanner'
 description: 'Scan Git repositories for secrets, keys, and credentials in CI/CD.'
 author: 'Khaled Hani'
 branding:
@@ -7,15 +7,15 @@ branding:
 
 inputs:
   version:
-    description: 'Sentinel version to install (e.g., latest, v2.0.4).'
+    description: 'Crenox version to install (e.g., latest, v2.0.4).'
     required: false
     default: 'latest'
   args:
-    description: 'Arguments to pass to the Sentinel CLI (e.g., "." to scan staging/workspace, "--history" for git log scan).'
+    description: 'Arguments to pass to the Crenox CLI (e.g., "." to scan staging/workspace, "--history" for git log scan).'
     required: false
     default: '.'
   sarif:
-    description: 'Set to "true" to export scan results to a SARIF report named "sentinel-results.sarif".'
+    description: 'Set to "true" to export scan results to a SARIF report named "crenox-results.sarif".'
     required: false
     default: 'false'
 
@@ -28,22 +28,22 @@ runs:
         go-version: '>=1.22'
         cache: true
 
-    - name: Install Sentinel CLI
+    - name: Install Crenox CLI
       shell: bash
       run: |
-        echo "Installing Sentinel CLI..."
-        go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@${{ inputs.version }}
-        echo "Sentinel installation completed successfully."
+        echo "Installing Crenox CLI..."
+        go install github.com/crenoxhq/crenox/v2/cmd/crenox@${{ inputs.version }}
+        echo "Crenox installation completed successfully."
 
-    - name: Run Sentinel Scan
+    - name: Run Crenox Scan
       shell: bash
       run: |
         if [ "${{ inputs.sarif }}" = "true" ]; then
-          echo "Running Sentinel scan with SARIF output..."
+          echo "Running Crenox scan with SARIF output..."
           # Run scan and write report to file using -o flag
-          sentinel scan -f sarif -o sentinel-results.sarif ${{ inputs.args }}
-          echo "Scan finished. Results saved to sentinel-results.sarif"
+          crenox scan -f sarif -o crenox-results.sarif ${{ inputs.args }}
+          echo "Scan finished. Results saved to crenox-results.sarif"
         else
-          echo "Running Sentinel scan..."
-          sentinel scan ${{ inputs.args }}
+          echo "Running Crenox scan..."
+          crenox scan ${{ inputs.args }}
         fi

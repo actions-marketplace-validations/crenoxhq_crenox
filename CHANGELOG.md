@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **C++ Mangled Symbol Suppression (Check 18):** Added structural filtering for C++ mangled names (`_ZN`, `_ZNK`, `_ZTI`, `_ZTV`, `_ZTS`) preventing them from triggering false positive entropy alerts.
 - **Variable Name Contexts:** Expanded safe variable name heuristics (Check 17) to reject variables containing `workspace`, `path`, `dir`, `folder`, `url`, `uri`, `host`, `link`, or `email`.
 - **Translation File Safelist:** Added `.supp`, `.po`, `.pot`, `.mo`, and `.xliff` to the `safeFileSuffixes` context suppressor to prevent noise from translation hashes.
-- **Stable OTA Updates:** Upgraded the `sentinel update` logic to fetch stable releases by default and introduced a `--beta` flag for opting into pre-release updates.
+- **Stable OTA Updates:** Upgraded the `crenox update` logic to fetch stable releases by default and introduced a `--beta` flag for opting into pre-release updates.
 - **Fail-Fast Mode (`--fail-fast`):** Implemented `--fail-fast` across concurrent file scans and history traversals, aborting instantly upon identifying the first secret.
 - **Safe File Mode Handling:** Added strict non-regular file checking (`!info.Mode().IsRegular()`) to instantly skip named pipes, sockets, and character devices, eliminating terminal freezes.
 - **Consolidated Generic Signature Rules:** Consolidated the redundant JSON/YAML and CLI variable matching rules down to 4 unified, keyword-only signatures (`password`, `secret`, `api_key`, `token`) matching standard coding patterns.
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Fixed
-- **OOM Memory Exhaustion:** Engineered chunk-size bounding (capped by `MaxFileSizeBytes`) during history git-diff scans and enforced aggressive `debug.FreeOSMemory()` sweeps every 250 files, ensuring Sentinel survives multi-gigabyte repositories without running out of RAM.
+- **OOM Memory Exhaustion:** Engineered chunk-size bounding (capped by `MaxFileSizeBytes`) during history git-diff scans and enforced aggressive `debug.FreeOSMemory()` sweeps every 250 files, ensuring Crenox survives multi-gigabyte repositories without running out of RAM.
 - **Tight Assignment Parser:** Refined `extractVarName` to recognize tight assignment operators inside the token boundary and strip declaration prefixes (`let`, `const`, `var`, `local`, `ref`, `mut`), ensuring precise LHS variable name isolation.
 - **Recursive Lock File Exclusion:** Upgraded exclude path glob matcher to run filename matching against the path's base name, ensuring files like `*.lock` and `go.sum` are correctly excluded from subdirectories recursively.
 - **Strict AWS Key Validators:** Hardened AWS MFA/STS token detection by adding strict regular expression validators for `ABIA` and `ASIA` prefixes, eliminating false positive alerts on common English word compounds (e.g. "with a bias on").
@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Strict Mailgun Validator:** Hardened Mailgun key detection with a 32-character hex validator.
 - **Test File React Suffixes:** Added `.test.tsx`, `.spec.tsx`, `.test.jsx`, and `.spec.jsx` to test suffixes for context suppression.
 - **Output File Descriptor Closure:** Fixed a bug where `os.Exit(1)` bypassed deferred report file closures in `-o` / `--output`, resulting in truncated logs.
-- **Git Repo Validation:** Ensured Sentinel aborts clean-exits on non-git target paths during pre-commit scans.
+- **Git Repo Validation:** Ensured Crenox aborts clean-exits on non-git target paths during pre-commit scans.
 - **Updater & Uninstall Endpoints:** Fixed hardcoded update and uninstall utility URLs to point to version 2 API targets.
 - **Unit Test Alignment:** Updated test suites (`commands_test.go` and `scanner_test.go`) and documentation to align with the new `80` signature rules count.
 - **Backward-Searching LHS variable isolation:** Upgraded `extractVarName` to search backwards from the token's position, linking tokens to their precise closest assignment operators (`=`, `:`, `:=`) and isolating the correct LHS variable name in complex lines with multiple assignments (e.g. minified JS files).
@@ -87,9 +87,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **100% Core Test Coverage:** Introduced robust unit test suites for `reporter` (JSON, Plain, SARIF formats), `git` diff/staging parsers, `commands` (CLI builders), and `updater`, achieving complete core coverage and ensuring long-term code stability.
-- **Reusable GitHub Action:** Officially released the custom composite GitHub Action (`action.yml`) supporting options (`version`, `args`, `sarif`) and optimized log visibility, published to the Marketplace as **Sentinel Git Secrets Scanner**.
-- **Dedicated Output Argument:** Added the `-o` / `--output` flag to Sentinel scan, enabling clean colorized console stdout logs in GHA while saving SARIF/JSON files silently.
-- **Android Build Integration:** Unified Sentinel scans directly into the `NexusFi-app` build pipeline, blocking unauthorized apk packaging on security findings.
+- **Reusable GitHub Action:** Officially released the custom composite GitHub Action (`action.yml`) supporting options (`version`, `args`, `sarif`) and optimized log visibility, published to the Marketplace as **Crenox Git Secrets Scanner**.
+- **Dedicated Output Argument:** Added the `-o` / `--output` flag to Crenox scan, enabling clean colorized console stdout logs in GHA while saving SARIF/JSON files silently.
+- **Android Build Integration:** Unified Crenox scans directly into the `NexusFi-app` build pipeline, blocking unauthorized apk packaging on security findings.
 - **Mailgun and Hex Letters-Only Tests:** Added unit tests verifying full token extraction and letter-only hex token detection.
 
 ### Fixed
@@ -104,8 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.4] - 2026-07-03
 
 ### Added
-- **SARIF Output Format:** Added support for the Static Analysis Results Interchange Format (SARIF) via the `-f sarif` / `--format sarif` flags. This enables Sentinel's findings to be natively ingested by GitHub Advanced Security Code Scanning alerts and enterprise dashboards.
-- **Custom User Signatures (`custom_signatures`):** Empowered enterprise teams to define proprietary search prefixes, regex validators, custom descriptions, and specific severities directly inside the `.sentinel.yaml` configuration file.
+- **SARIF Output Format:** Added support for the Static Analysis Results Interchange Format (SARIF) via the `-f sarif` / `--format sarif` flags. This enables Crenox's findings to be natively ingested by GitHub Advanced Security Code Scanning alerts and enterprise dashboards.
+- **Custom User Signatures (`custom_signatures`):** Empowered enterprise teams to define proprietary search prefixes, regex validators, custom descriptions, and specific severities directly inside the `.crenox.yaml` configuration file.
 - **Expanded Rule Coverage:** Registered custom signatures for Django secret keys (`SECRET_KEY =`), WordPress Salts and Keys (e.g. `AUTH_KEY`, `SECURE_AUTH_KEY`, etc.), and JSON/YAML key-value mappings (e.g. `password:`, `secret:`).
 
 ### Fixed
@@ -119,13 +119,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Allowlist Patterns Implementation:** Fixed an issue where the `allowlist_patterns` configuration was parsed but not passed into the core scanning engine. Custom ignore patterns now correctly bypass findings during scans.
-- **Documentation Unification:** Unified conflicting `sentinel:ignore` wording across CLI outputs and `README.md` to accurately reflect that suppression tags can be placed on the preceding line or at the end of the line.
+- **Documentation Unification:** Unified conflicting `crenox:ignore` wording across CLI outputs and `README.md` to accurately reflect that suppression tags can be placed on the preceding line or at the end of the line.
 - **Configuration Defaults:** Unified the `exclude_paths` and `exclude_extensions` documentation in the README so that both the reference section and the examples section match the built-in defaults.
 
 ## [2.0.3] - 2026-06-30
 
 ### Added
-- **Allowlist Patterns:** Developers can now specify glob patterns and literal strings in `.sentinel.yaml` to safely ignore known mock credentials.
+- **Allowlist Patterns:** Developers can now specify glob patterns and literal strings in `.crenox.yaml` to safely ignore known mock credentials.
 - **Generic Assignment Tracking:** Tier 1 now intelligently traps generic high-entropy assignments (e.g. `api_key = "..."`) using context heuristics.
 
 ### Fixed

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sentinel-cli.github.io/sentinel/sitemap.xml
+Sitemap: https://crenoxhq.github.io/crenox/sitemap.xml

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sentinel Landing Page Logic
+   Crenox Landing Page Logic
    Features: Minimal scroll fade-in reveals.
    ========================================================================== */
 

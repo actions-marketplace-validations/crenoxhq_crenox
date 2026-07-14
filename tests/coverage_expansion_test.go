@@ -5,29 +5,29 @@ import (
 	"testing"
 	"time"
 
-	sentinelcontext "github.com/sentinel-cli/sentinel/v2/internal/context"
-	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	crenoxcontext "github.com/crenoxhq/crenox/v2/internal/context"
+	"github.com/crenoxhq/crenox/v2/internal/reporter"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
 )
 
 // 1. Context tests
 func TestContext_Suppression(t *testing.T) {
-	if !sentinelcontext.IsSuppressed(sentinelcontext.SafeComment) {
+	if !crenoxcontext.IsSuppressed(crenoxcontext.SafeComment) {
 		t.Error("expected SafeComment to be suppressed")
 	}
-	if sentinelcontext.IsSuppressed(sentinelcontext.Real) {
+	if crenoxcontext.IsSuppressed(crenoxcontext.Real) {
 		t.Error("expected Real to NOT be suppressed")
 	}
 
 	// String representation of Decision
-	decisions := []sentinelcontext.Decision{
-		sentinelcontext.Real,
-		sentinelcontext.SafeComment,
-		sentinelcontext.SafeTestFile,
-		sentinelcontext.SafeVariableName,
-		sentinelcontext.SafePlaceholder,
-		sentinelcontext.SafeUUID,
-		sentinelcontext.SafeVersionString,
+	decisions := []crenoxcontext.Decision{
+		crenoxcontext.Real,
+		crenoxcontext.SafeComment,
+		crenoxcontext.SafeTestFile,
+		crenoxcontext.SafeVariableName,
+		crenoxcontext.SafePlaceholder,
+		crenoxcontext.SafeUUID,
+		crenoxcontext.SafeVersionString,
 	}
 	for _, d := range decisions {
 		if d.String() == "" {

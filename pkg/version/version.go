@@ -1,9 +1,9 @@
 // Package version exposes build-time metadata injected via ldflags.
 // Build with:
 //
-//	go build -ldflags "-X github.com/sentinel-cli/sentinel/v2/pkg/version.Version=v1.0.0 \
-//	                    -X github.com/sentinel-cli/sentinel/v2/pkg/version.Commit=$(git rev-parse --short HEAD) \
-//	                    -X github.com/sentinel-cli/sentinel/v2/pkg/version.Date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+//	go build -ldflags "-X github.com/crenoxhq/crenox/v2/pkg/version.Version=v1.0.0 \
+//	                    -X github.com/crenoxhq/crenox/v2/pkg/version.Commit=$(git rev-parse --short HEAD) \
+//	                    -X github.com/crenoxhq/crenox/v2/pkg/version.Date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 package version
 
 import (
@@ -43,5 +43,5 @@ func init() {
 // UserAgent returns a formatted user-agent string for HTTP calls (if any future
 // remote telemetry opt-in is added).
 func UserAgent() string {
-	return "sentinel/" + Version + " (" + Commit + "; " + Date + ")"
+	return "crenox/" + Version + " (" + Commit + "; " + Date + ")"
 }

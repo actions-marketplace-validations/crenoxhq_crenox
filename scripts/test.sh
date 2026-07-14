@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# test.sh — Run the full Sentinel test suite with coverage and benchmarks
+# test.sh — Run the full Crenox test suite with coverage and benchmarks
 # ─────────────────────────────────────────────────────────────────────────────
 # Usage:
 #   ./scripts/test.sh              # run all tests
@@ -14,7 +14,7 @@ COVER_OUT="coverage.out"
 COVER_HTML="coverage.html"
 
 echo "┌────────────────────────────────────────────────────┐"
-echo "│  SENTINEL TEST SUITE                                │"
+echo "│  CRENOX TEST SUITE                                │"
 echo "└────────────────────────────────────────────────────┘"
 echo
 

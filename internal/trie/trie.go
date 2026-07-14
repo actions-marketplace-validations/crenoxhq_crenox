@@ -1,4 +1,4 @@
-// Package trie implements Tier 1 of the Sentinel detection pipeline:
+// Package trie implements Tier 1 of the Crenox detection pipeline:
 // an Aho-Corasick automaton for ultra-fast, O(n) multi-pattern matching
 // of known secret signatures across arbitrary byte streams.
 //
@@ -38,7 +38,7 @@ type Signature struct {
 }
 
 // BuiltinSignatures is the exhaustive catalogue of known secret prefixes that
-// Sentinel detects via the Aho-Corasick automaton.
+// Crenox detects via the Aho-Corasick automaton.
 var BuiltinSignatures = []Signature{
 	// ── GitHub ────────────────────────────────────────────────────────────────
 	{ID: "github-pat-classic", Description: "GitHub Personal Access Token (classic)", Prefix: "ghp_", Severity: "CRITICAL", Validator: regexp.MustCompile(`^ghp_[a-zA-Z0-9]{20,40}$`)},

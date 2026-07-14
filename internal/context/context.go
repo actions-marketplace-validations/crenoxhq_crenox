@@ -1,4 +1,4 @@
-// Package context implements Tier 3 of the Sentinel detection pipeline:
+// Package context implements Tier 3 of the Crenox detection pipeline:
 // context-aware filtering that eliminates false positives by inspecting
 // the surrounding code structure of a potential secret.
 //

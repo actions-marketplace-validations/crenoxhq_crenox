@@ -1,5 +1,5 @@
 // Package tests contains exhaustive unit, boundary, and stress tests for
-// the Sentinel detection pipeline components.
+// the Crenox detection pipeline components.
 package tests
 
 import (
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/trie"
+	"github.com/crenoxhq/crenox/v2/internal/trie"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────

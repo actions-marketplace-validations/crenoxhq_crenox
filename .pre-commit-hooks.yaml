@@ -1,6 +1,6 @@
-- id: sentinel
-  name: Sentinel Secret Scanner
+- id: crenox
+  name: Crenox Secret Scanner
   description: A zero-dependency git pre-commit hook to detect secrets.
-  entry: sentinel scan
+  entry: crenox scan
   language: golang
   types: [text]

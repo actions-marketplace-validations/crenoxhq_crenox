@@ -1,4 +1,4 @@
-// Package entropy implements Tier 2 of the Sentinel detection pipeline:
+// Package entropy implements Tier 2 of the Crenox detection pipeline:
 // Shannon entropy analysis for detecting high-randomness strings that escape
 // pattern-based detection (e.g., raw hex or Base64-encoded secrets).
 package entropy

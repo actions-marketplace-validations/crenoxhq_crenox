@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sentinel-cli/sentinel/v2/internal/reporter"
-	"github.com/sentinel-cli/sentinel/v2/internal/scanner"
+	"github.com/crenoxhq/crenox/v2/internal/reporter"
+	"github.com/crenoxhq/crenox/v2/internal/scanner"
 )
 
 // Simple structures to unmarshal and validate SARIF output
@@ -84,8 +84,8 @@ func TestSARIFReporter(t *testing.T) {
 		t.Fatalf("expected 1 run, got %d", len(report.Runs))
 	}
 	run := report.Runs[0]
-	if run.Tool.Driver.Name != "Sentinel" {
-		t.Errorf("expected driver name Sentinel, got %s", run.Tool.Driver.Name)
+	if run.Tool.Driver.Name != "Crenox" {
+		t.Errorf("expected driver name Crenox, got %s", run.Tool.Driver.Name)
 	}
 	if len(run.Tool.Driver.Rules) != 1 || run.Tool.Driver.Rules[0].ID != "slack-webhook" {
 		t.Errorf("expected rule ID slack-webhook, got %+v", run.Tool.Driver.Rules)

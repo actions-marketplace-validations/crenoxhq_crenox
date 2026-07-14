@@ -1,4 +1,4 @@
-// Package scanner orchestrates the three-tier Sentinel detection pipeline
+// Package scanner orchestrates the three-tier Crenox detection pipeline
 // for a single staged file.  It coordinates:
 //
 //   - Tier 1 (trie)    — Aho-Corasick pattern matching
@@ -19,9 +19,9 @@ import (
 	"strings"
 	"sync"
 
-	sentinelcontext "github.com/sentinel-cli/sentinel/v2/internal/context"
-	"github.com/sentinel-cli/sentinel/v2/internal/entropy"
-	"github.com/sentinel-cli/sentinel/v2/internal/trie"
+	crenoxcontext "github.com/crenoxhq/crenox/v2/internal/context"
+	"github.com/crenoxhq/crenox/v2/internal/entropy"
+	"github.com/crenoxhq/crenox/v2/internal/trie"
 )
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ import (
 
 // Tier identifies which detection tier produced a finding.
 // Note: "Tier 3 (Context)" is implemented as a suppression/filtering layer
-// via the sentinelcontext package, which is why it doesn't have a direct
+// via the crenoxcontext package, which is why it doesn't have a direct
 // TierContext constant representing a detection source here.
 type Tier int
 
@@ -201,7 +201,7 @@ func isAlphaNum(b byte) bool {
 }
 
 var (
-	sentinelIgnoreBytes = []byte("sentinel:ignore")
+	crenoxIgnoreBytes = []byte("crenox:ignore")
 	prefixSlash         = []byte("//")
 	prefixHash          = []byte("#")
 	prefixBlock         = []byte("/*")
@@ -328,12 +328,12 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 			continue
 		}
 
-		// ── Inline Suppression (sentinel:ignore) ──────────────────────────────
+		// ── Inline Suppression (crenox:ignore) ──────────────────────────────
 		if skipNextLine {
 			skipNextLine = false
 			continue
 		}
-		if bytes.Contains(lineTrim, sentinelIgnoreBytes) {
+		if bytes.Contains(lineTrim, crenoxIgnoreBytes) {
 			if bytes.HasPrefix(lineTrim, prefixSlash) || bytes.HasPrefix(lineTrim, prefixHash) || bytes.HasPrefix(lineTrim, prefixBlock) || bytes.HasPrefix(lineTrim, prefixHtml) {
 				skipNextLine = true
 			}
@@ -408,7 +408,7 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 			// 12, 15, 18, 21, and 24-word BIP-39 crypto wallet recovery phrases.
 			if spaceCount == 11 || spaceCount == 14 || spaceCount == 17 || spaceCount == 20 || spaceCount == 23 {
 				if isStrictBip39Mnemonic(string(targetStr)) {
-					if !s.opts.DisableContext && sentinelcontext.IsTestFilePath(filePath) {
+					if !s.opts.DisableContext && crenoxcontext.IsTestFilePath(filePath) {
 						continue
 					}
 					findings = append(findings, Finding{
@@ -461,14 +461,14 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 				if len(token) > 0 && token[0] == '%' && fmtVerbRE.MatchString(token) {
 					continue
 				}
-				decision := sentinelcontext.Real
+				decision := crenoxcontext.Real
 				if !s.opts.DisableContext {
-					decision = sentinelcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
-					if decision == sentinelcontext.Real {
-						decision = sentinelcontext.ClassifyWithPrev(filePath, string(rawLine), string(prevLineTrim), token, m.Sig.ID)
+					decision = crenoxcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
+					if decision == crenoxcontext.Real {
+						decision = crenoxcontext.ClassifyWithPrev(filePath, string(rawLine), string(prevLineTrim), token, m.Sig.ID)
 					}
 				}
-				if decision == sentinelcontext.Real {
+				if decision == crenoxcontext.Real {
 					if s.isAllowed(token) {
 						continue
 					}
@@ -552,11 +552,11 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 					if s.isAllowed(token) {
 						continue
 					}
-					decision := sentinelcontext.Real
+					decision := crenoxcontext.Real
 					if !s.opts.DisableContext {
-						decision = sentinelcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
+						decision = crenoxcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
 					}
-					if decision == sentinelcontext.Real {
+					if decision == crenoxcontext.Real {
 						newMatch := Finding{
 							FilePath:      filePath,
 							Line:          lineNum,
@@ -632,11 +632,11 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 							if s.isAllowed(token) {
 								continue
 							}
-							decision := sentinelcontext.Real
+							decision := crenoxcontext.Real
 							if !s.opts.DisableContext {
-								decision = sentinelcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
+								decision = crenoxcontext.Classify(filePath, string(rawLine), token, m.Sig.ID)
 							}
-							if decision == sentinelcontext.Real {
+							if decision == crenoxcontext.Real {
 								newMatch := Finding{
 									FilePath:      filePath,
 									Line:          lineNum,
@@ -680,14 +680,14 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 						if isSource && !isAssignment && h.Kind == "base64" {
 							continue
 						}
-						decision := sentinelcontext.Real
+						decision := crenoxcontext.Real
 						if !s.opts.DisableContext {
-							decision = sentinelcontext.Classify(filePath, string(rawLine), h.Token, h.Kind)
-							if decision == sentinelcontext.Real {
-								decision = sentinelcontext.ClassifyWithPrev(filePath, string(rawLine), string(prevLineTrim), h.Token, h.Kind)
+							decision = crenoxcontext.Classify(filePath, string(rawLine), h.Token, h.Kind)
+							if decision == crenoxcontext.Real {
+								decision = crenoxcontext.ClassifyWithPrev(filePath, string(rawLine), string(prevLineTrim), h.Token, h.Kind)
 							}
 						}
-						if decision == sentinelcontext.Real {
+						if decision == crenoxcontext.Real {
 							idx := strings.Index(string(rawLine), h.Token)
 							if idx > 0 && rawLine[idx-1] == '@' {
 								continue
@@ -810,7 +810,7 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 								FilePath:      filePath,
 								Line:          lineNum,
 								LineContent:   string(rawLine),
-								Token:         cleanToken(h.Token), // sentinel:ignore
+								Token:         cleanToken(h.Token), // crenox:ignore
 								Entropy:       h.Entropy,
 								DetectionTier: TierEntropy,
 								SignatureID:   fmt.Sprintf("high-entropy-%s", h.Kind),
@@ -845,16 +845,16 @@ func (s *Scanner) ScanReader(filePath string, r io.Reader) []Finding {
 									if s.isAllowed(h.Token) {
 										continue
 									}
-									decision := sentinelcontext.Real
+									decision := crenoxcontext.Real
 									if !s.opts.DisableContext {
-										decision = sentinelcontext.Classify(filePath, string(rawLine), h.Token, h.Kind)
+										decision = crenoxcontext.Classify(filePath, string(rawLine), h.Token, h.Kind)
 									}
-									if decision == sentinelcontext.Real {
+									if decision == crenoxcontext.Real {
 										newMatch := Finding{
 											FilePath:      filePath,
 											Line:          lineNum,
 											LineContent:   string(rawLine),
-											Token:         cleanToken(h.Token), // sentinel:ignore
+											Token:         cleanToken(h.Token), // crenox:ignore
 											Entropy:       h.Entropy,
 											DetectionTier: TierEntropy,
 											SignatureID:   fmt.Sprintf("log-high-entropy-%s", h.Kind),

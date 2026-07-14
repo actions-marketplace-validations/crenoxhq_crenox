@@ -1,4 +1,4 @@
-// Package config defines the Sentinel configuration schema, default values,
+// Package config defines the Crenox configuration schema, default values,
 // and the loader that merges the on-disk YAML with per-repo overrides.
 package config
 
@@ -13,9 +13,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// DefaultConfigFileName is the filename Sentinel looks for in the repository
+// DefaultConfigFileName is the filename Crenox looks for in the repository
 // root and in the user's home directory.
-const DefaultConfigFileName = ".sentinel.yaml"
+const DefaultConfigFileName = ".crenox.yaml"
 
 // DefaultEntropyThreshold is the Shannon entropy value (bits per symbol)
 // above which an alphanumeric string is flagged as a potential secret.
@@ -27,10 +27,10 @@ const DefaultEntropyThreshold = 4.5
 const DefaultMinSecretLength = 20
 
 // DefaultMaxFileSizeBytes is the upper bound on a single file size that
-// Sentinel will fully scan.  Files exceeding this are skipped with a warning.
+// Crenox will fully scan.  Files exceeding this are skipped with a warning.
 const DefaultMaxFileSizeBytes = 10 * 1024 * 1024 // 10 MB
 
-// Config is the top-level Sentinel configuration structure.
+// Config is the top-level Crenox configuration structure.
 type Config struct {
 	// EntropyThreshold overrides DefaultEntropyThreshold when set.
 	EntropyThreshold float64 `yaml:"entropy_threshold"`
@@ -42,7 +42,7 @@ type Config struct {
 	MaxFileSizeBytes int64 `yaml:"max_file_size_bytes"`
 
 	// ExcludePaths is a list of glob patterns (relative to repo root) that
-	// Sentinel will never scan.  Useful for vendored code, fixtures, etc.
+	// Crenox will never scan.  Useful for vendored code, fixtures, etc.
 	ExcludePaths []string `yaml:"exclude_paths"`
 
 	// ExcludeExtensions lists file extensions (including the dot) that are
@@ -63,7 +63,7 @@ type Config struct {
 	// FailFast stops scanning after the first finding (faster CI fail-loop).
 	FailFast bool `yaml:"fail_fast"`
 
-	// ScanBinaryFiles controls whether Sentinel attempts to scan binary files
+	// ScanBinaryFiles controls whether Crenox attempts to scan binary files
 	// after magic-byte detection.  Defaults to false (skip binaries).
 	ScanBinaryFiles bool `yaml:"scan_binary_files"`
 

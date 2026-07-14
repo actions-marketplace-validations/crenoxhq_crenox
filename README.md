@@ -1,4 +1,4 @@
-# Sentinel — Ultra-Fast Git Secret Scanner & Pre-Commit Hook
+# Crenox — Ultra-Fast Git Secret Scanner & Pre-Commit Hook
 
 <!-- SEO: git secret scanner, pre-commit hook, gitleaks alternative, credentials detector, api key detection, go security tool, git-secrets alternative -->
 
@@ -15,13 +15,13 @@
 
 **Enterprise-grade Git pre-commit secret detector, Gitleaks alternative, and high-performance credentials scanner written in Go.**
 
-[![Release](https://img.shields.io/github/v/release/sentinel-cli/sentinel?color=3c6382&logo=github&label=latest&v=4)](https://github.com/sentinel-cli/sentinel/releases)
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Sentinel-3c6382.svg?logo=github&v=4)](https://github.com/marketplace/actions/sentinel-git-secrets-scanner)
-[![Downloads](https://img.shields.io/github/downloads/sentinel-cli/sentinel/total?color=4b6584&logo=github&v=4)](https://github.com/sentinel-cli/sentinel/releases)
-[![CI](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml/badge.svg?branch=main&v=4)](https://github.com/sentinel-cli/sentinel/actions/workflows/ci.yml)
-[![Stars](https://img.shields.io/github/stars/sentinel-cli/sentinel?style=flat&logo=github&color=3c6382&v=4)](https://github.com/sentinel-cli/sentinel/stargazers)
+[![Release](https://img.shields.io/github/v/release/crenoxhq/crenox?color=3c6382&logo=github&label=latest&v=4)](https://github.com/crenoxhq/crenox/releases)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Crenox-3c6382.svg?logo=github&v=4)](https://github.com/marketplace/actions/crenox-git-secrets-scanner)
+[![Downloads](https://img.shields.io/github/downloads/crenoxhq/crenox/total?color=4b6584&logo=github&v=4)](https://github.com/crenoxhq/crenox/releases)
+[![CI](https://github.com/crenoxhq/crenox/actions/workflows/ci.yml/badge.svg?branch=main&v=4)](https://github.com/crenoxhq/crenox/actions/workflows/ci.yml)
+[![Stars](https://img.shields.io/github/stars/crenoxhq/crenox?style=flat&logo=github&color=3c6382&v=4)](https://github.com/crenoxhq/crenox/stargazers)
 [![Go Version](https://img.shields.io/badge/Go-1.22+-2f3542?logo=go&v=4)](https://go.dev)
-[![Go Reference](https://pkg.go.dev/badge/github.com/sentinel-cli/sentinel/v2.svg?v=4)](https://pkg.go.dev/github.com/sentinel-cli/sentinel/v2)
+[![Go Reference](https://pkg.go.dev/badge/github.com/crenoxhq/crenox/v2.svg?v=4)](https://pkg.go.dev/github.com/crenoxhq/crenox/v2)
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Android%2FTermux-2f3542?v=4)](#installation)
 [![License](https://img.shields.io/badge/license-AGPL_3.0-4b6584?v=4)](LICENSE)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg?v=4)](https://github.com/avelino/awesome-go)
@@ -30,13 +30,13 @@
 
 ---
 
-## What is Sentinel?
+## What is Crenox?
 
-**Sentinel** is a statically compiled, zero-dependency Git pre-commit hook and credentials scanner written in Go. It automatically blocks accidental commits of API keys, SSH private keys, cloud credentials, database connection strings, and other sensitive material before they enter version control.
+**Crenox** is a statically compiled, zero-dependency Git pre-commit hook and credentials scanner written in Go. It automatically blocks accidental commits of API keys, SSH private keys, cloud credentials, database connection strings, and other sensitive material before they enter version control.
 
 It is a lightweight, developer-friendly alternative to **Gitleaks** and **git-secrets**, with broader detection coverage and significantly lower resource usage.
 
-Sentinel uses a **three-tier detection pipeline** built for speed and near-zero false positives:
+Crenox uses a **three-tier detection pipeline** built for speed and near-zero false positives:
 
 | Tier | Engine | Purpose |
 |------|--------|---------|
@@ -54,19 +54,19 @@ A finding must survive all three tiers before it is reported.
 
 ```bash
 # 1. Install
-go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
+go install github.com/crenoxhq/crenox/v2/cmd/crenox@latest
 
 # 2. Protect the current repository
-sentinel install
+crenox install
 
-# 3. Verify — Sentinel will now scan every commit automatically
+# 3. Verify — Crenox will now scan every commit automatically
 git add . && git commit -m "test"
 ```
 
 **Or scan any directory right now, without a hook:**
 
 ```bash
-sentinel scan --recursive ./src
+crenox scan --recursive ./src
 ```
 
 That is all. No configuration file required. No runtime dependencies. Works on Linux, macOS, Windows, and Android/Termux.
@@ -76,19 +76,19 @@ That is all. No configuration file required. No runtime dependencies. Works on L
 ## Terminal Demo
 
 ```bash
-asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
+asciinema play https://crenoxhq.github.io/crenox/demo.cast
 ```
 
-![Sentinel Demo](docs/demo.gif)
+![Crenox Demo](docs/demo.gif)
 
 ---
 
 ## Table of Contents
 
-- [What is Sentinel](#what-is-sentinel)
+- [What is Crenox](#what-is-crenox)
 - [Quick Start](#quick-start)
 - [Performance](#performance)
-- [Why Sentinel](#why-sentinel)
+- [Why Crenox](#why-crenox)
 - [Architecture](#architecture)
 - [Signature Coverage](#signature-coverage)
 - [Installation](#installation)
@@ -105,17 +105,17 @@ asciinema play https://sentinel-cli.github.io/sentinel/demo.cast
 
 ## Performance
 
-Measured on real-world repositories with Sentinel against the two most popular alternatives.
+Measured on real-world repositories with Crenox against the two most popular alternatives.
 
 <details>
 <summary>Filesystem Scan Results (Standard Mode)</summary>
 
 | Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel** | **31 ms** | **11.9 MB** | **2** |
+| sample\_secrets | **Crenox** | **31 ms** | **11.9 MB** | **2** |
 | | Gitleaks v8.30.1 | 1.13 s | 60.8 MB | 1 |
 | | TruffleHog v3.95.8 | 7.39 s | 204.7 MB | 2 |
-| truffleHogRegexes | **Sentinel** | **40 ms** | **11.9 MB** | **3** |
+| truffleHogRegexes | **Crenox** | **40 ms** | **11.9 MB** | **3** |
 | | Gitleaks v8.30.1 | 1.22 s | 61.1 MB | 1 |
 | | TruffleHog v3.95.8 | 6.69 s | 207.3 MB | 0 |
 
@@ -126,10 +126,10 @@ Measured on real-world repositories with Sentinel against the two most popular a
 
 | Repository | Tool | Execution Time | Peak RAM | Findings |
 |:---|:---|:---|:---|:---|
-| sample\_secrets | **Sentinel** | **52 ms** | **11.3 MB** | **2** |
+| sample\_secrets | **Crenox** | **52 ms** | **11.3 MB** | **2** |
 | | Gitleaks v8.30.1 | 1.27 s | 63.1 MB | 1 |
 | | TruffleHog v3.95.8 | 7.26 s | 206.2 MB | 2 |
-| truffleHogRegexes | **Sentinel** | **58 ms** | **11.7 MB** | **3** |
+| truffleHogRegexes | **Crenox** | **58 ms** | **11.7 MB** | **3** |
 | | Gitleaks v8.30.1 | 1.27 s | 63.3 MB | 1 |
 | | TruffleHog v3.95.8 | 6.79 s | 207.2 MB | 0 |
 
@@ -145,9 +145,9 @@ Measured on real-world repositories with Sentinel against the two most popular a
 
 ---
 
-## Why Sentinel — Comparison (vs Gitleaks, TruffleHog, detect-secrets)
+## Why Crenox — Comparison (vs Gitleaks, TruffleHog, detect-secrets)
 
-| Feature | Sentinel | git-secrets | detect-secrets | TruffleHog |
+| Feature | Crenox | git-secrets | detect-secrets | TruffleHog |
 |---------|:--------:|:-----------:|:--------------:|:----------:|
 | Statically compiled, no runtime dependencies | + | — bash | — Python | — Python |
 | ARM / Android / Termux native | + | partial | — | — |
@@ -242,7 +242,7 @@ H(X) = - sum over i of P(xi) * log2(P(xi))
 | ~5.5 – 6.5 | Cryptographically random Base64 secret |
 | 8.0 | Perfectly uniform 256-symbol distribution |
 
-Sentinel extracts two token classes per line:
+Crenox extracts two token classes per line:
 - **Base64 tokens** — runs of `A-Za-z0-9+/=_-`; entropy must exceed `entropy_threshold` (default 4.5).
 - **Hex tokens** — runs of `0-9a-fA-F`; must be even-length if short (< 32 characters) to filter out arbitrary non-secret hex strings; threshold is scaled: `entropy_threshold × (4.0 / 6.0)`, floor 3.0.
 
@@ -272,22 +272,22 @@ The scanner also rejects tokens that match a `printf`-style format verb, are ide
 
 ### Inline Suppression
 
-Place `sentinel:ignore` on the flagged line or the preceding comment line:
+Place `crenox:ignore` on the flagged line or the preceding comment line:
 
 ```go
-// sentinel:ignore
+// crenox:ignore
 apiKey := "sk_live_example_for_documentation"
 
-apiKey := "sk_live_example_for_documentation" // sentinel:ignore
+apiKey := "sk_live_example_for_documentation" // crenox:ignore
 ```
 
 ```bash
-# sentinel:ignore
+# crenox:ignore
 STRIPE_KEY="sk_live_example"
 ```
 
 ```html
-<!-- sentinel:ignore -->
+<!-- crenox:ignore -->
 <secret>sk-ant-api03-documented-example</secret>
 ```
 
@@ -332,7 +332,7 @@ A same-line annotation suppresses only that line. A comment-line annotation supp
 | **WordPress** | `AUTH_KEY` `SECURE_AUTH_KEY` `LOGGED_IN_KEY` `NONCE_KEY` `AUTH_SALT` `SECURE_AUTH_SALT` `LOGGED_IN_SALT` `NONCE_SALT` |
 | **Crypto Wallets** | BIP-39 mnemonic (12/15/18/21/24 words, validated against 2048-word dictionary) |
 
-Custom signatures can be added in `.sentinel.yaml` and are compiled into the same automaton at startup — no performance overhead.
+Custom signatures can be added in `.crenox.yaml` and are compiled into the same automaton at startup — no performance overhead.
 
 </details>
 
@@ -342,54 +342,54 @@ Custom signatures can be added in `.sentinel.yaml` and are compiled into the sam
 
 ### Pre-compiled Binary (Recommended)
 
-Download the binary for your platform from the [Releases page](https://github.com/sentinel-cli/sentinel/releases):
+Download the binary for your platform from the [Releases page](https://github.com/crenoxhq/crenox/releases):
 
 ```bash
 # Replace <version> and <arch>  e.g.  linux-amd64  linux-arm64  darwin-amd64  darwin-arm64
-wget https://github.com/sentinel-cli/sentinel/releases/download/<version>/sentinel-<version>-<arch> -O sentinel
-chmod +x sentinel
-mv sentinel /usr/local/bin/       # Linux / macOS
-# mv sentinel $PREFIX/bin/        # Termux (Android)
-sentinel version
+wget https://github.com/crenoxhq/crenox/releases/download/<version>/crenox-<version>-<arch> -O crenox
+chmod +x crenox
+mv crenox /usr/local/bin/       # Linux / macOS
+# mv crenox $PREFIX/bin/        # Termux (Android)
+crenox version
 ```
 
 ### Go Install
 
 ```bash
-go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
+go install github.com/crenoxhq/crenox/v2/cmd/crenox@latest
 ```
 
 ### Build from Source
 
 ```bash
-git clone https://github.com/sentinel-cli/sentinel.git
-cd sentinel
-make build            # outputs to dist/sentinel
-./dist/sentinel version
+git clone https://github.com/crenoxhq/crenox.git
+cd crenox
+make build            # outputs to dist/crenox
+./dist/crenox version
 ```
 
 ### Android / Termux
 
-Sentinel can be easily installed on Android using Termux.
+Crenox can be easily installed on Android using Termux.
 
 **Via Termux User Repository (TUR):**
 ```bash
 pkg install tur-repo
-pkg install sentinel
+pkg install crenox
 ```
 
 **Via Pre-compiled Binary:**
-Download the corresponding `android-arm64` or `android-arm` binary from the [Releases page](https://github.com/sentinel-cli/sentinel/releases):
+Download the corresponding `android-arm64` or `android-arm` binary from the [Releases page](https://github.com/crenoxhq/crenox/releases):
 ```bash
 # Replace <version>  e.g. v2.0.7
-wget https://github.com/sentinel-cli/sentinel/releases/download/<version>/sentinel-<version>-android-arm64 -O sentinel
-chmod +x sentinel
-mv sentinel $PREFIX/bin/
-sentinel version
+wget https://github.com/crenoxhq/crenox/releases/download/<version>/crenox-<version>-android-arm64 -O crenox
+chmod +x crenox
+mv crenox $PREFIX/bin/
+crenox version
 ```
 
 > [!NOTE]
-> Sentinel's built-in over-the-air (OTA) self-updater (`sentinel update`) now fully supports Android/Termux devices directly, pulling and installing the latest compatible release from the GitHub releases page.
+> Crenox's built-in over-the-air (OTA) self-updater (`crenox update`) now fully supports Android/Termux devices directly, pulling and installing the latest compatible release from the GitHub releases page.
 
 ---
 
@@ -398,16 +398,16 @@ sentinel version
 **Protect the current repository:**
 
 ```bash
-sentinel install          # installs .git/hooks/pre-commit
-sentinel install --force  # overwrites an existing hook
+crenox install          # installs .git/hooks/pre-commit
+crenox install --force  # overwrites an existing hook
 ```
 
 **Protect every repository on this machine (global):**
 
 ```bash
-sentinel install --global
-# Creates ~/.config/sentinel/hooks/pre-commit
-# Runs: git config --global core.hooksPath ~/.config/sentinel/hooks
+crenox install --global
+# Creates ~/.config/crenox/hooks/pre-commit
+# Runs: git config --global core.hooksPath ~/.config/crenox/hooks
 ```
 
 **Remove global hook:**
@@ -419,7 +419,7 @@ git config --global --unset core.hooksPath
 **Full uninstall — removes binary, hooks, and config directory:**
 
 ```bash
-sentinel uninstall
+crenox uninstall
 ```
 
 ### Native pre-commit Framework
@@ -427,21 +427,21 @@ sentinel uninstall
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/sentinel-cli/sentinel
+  - repo: https://github.com/crenoxhq/crenox
     rev: v2.0.7 # Replace with the latest release version
     hooks:
-      - id: sentinel
+      - id: crenox
 ```
 
 ---
 
 ## Configuration
 
-Sentinel searches for `.sentinel.yaml` in this order:
+Crenox searches for `.crenox.yaml` in this order:
 
 1. `--config` / `-c` flag value
-2. `.sentinel.yaml` in the current working directory (repository root)
-3. `~/.sentinel.yaml` in the home directory
+2. `.crenox.yaml` in the current working directory (repository root)
+3. `~/.crenox.yaml` in the home directory
 
 With no config file, built-in defaults apply. The file is merged on top of defaults, so omitted fields keep their default values.
 
@@ -570,7 +570,7 @@ custom_signatures:
 
 ### Automatic (Pre-commit Hook)
 
-After `sentinel install`, the hook fires on every `git commit` and scans only staged content:
+After `crenox install`, the hook fires on every `git commit` and scans only staged content:
 - **New files** — full content via `git show :<path>`
 - **Modified files** — added lines only via `git diff --cached -- <path>`
 
@@ -578,22 +578,22 @@ After `sentinel install`, the hook fires on every `git commit` and scans only st
 
 ```bash
 # Single file
-sentinel scan config/production.yaml
+crenox scan config/production.yaml
 
 # Directory (non-recursive)
-sentinel scan ./config
+crenox scan ./config
 
 # Directory, recursive (skips .git, build, node_modules automatically)
-sentinel scan -r ./src
+crenox scan -r ./src
 
 # Full Git history audit (streams git log --all -p; deduplicates by token)
-sentinel scan --history .
+crenox scan --history .
 
 # JSON output — written to stdout for piping
-sentinel scan -f json -r ./src | jq '.findings[] | select(.severity == "CRITICAL")'
+crenox scan -f json -r ./src | jq '.findings[] | select(.severity == "CRITICAL")'
 
 # SARIF output saved directly to file (keeps pretty terminal logs)
-sentinel scan -f sarif -o sentinel.sarif .
+crenox scan -f sarif -o crenox.sarif .
 
 ```
 
@@ -603,11 +603,11 @@ sentinel scan -f sarif -o sentinel.sarif .
 ### CI Integration
 
 #### GitHub Actions (Official Reusable Action)
-The easiest way to integrate Sentinel into your GitHub Actions workflow is by using our official reusable action. It handles Go installation, compilation cache, and scanning automatically:
+The easiest way to integrate Crenox into your GitHub Actions workflow is by using our official reusable action. It handles Go installation, compilation cache, and scanning automatically:
 
 ```yaml
-- name: Run Sentinel Git Secrets Scanner
-  uses: sentinel-cli/sentinel@v2
+- name: Run Crenox Git Secrets Scanner
+  uses: crenoxhq/crenox@v2
   with:
     version: 'latest' # Optional: specific version to use (e.g. 'v2.x.x')
     args: '.'         # Optional: arguments to pass (e.g. "." or "--history .")
@@ -621,7 +621,7 @@ To upload the results to GitHub Advanced Security (Code Scanning Alerts), config
   if: always()
   uses: github/codeql-action/upload-sarif@v3
   with:
-    sarif_file: sentinel-results.sarif
+    sarif_file: crenox-results.sarif
 ```
 
 > [!TIP]
@@ -631,30 +631,30 @@ To upload the results to GitHub Advanced Security (Code Scanning Alerts), config
 
 ```yaml
 # GitLab CI
-sentinel-scan:
+crenox-scan:
   stage: test
   image: golang:1.22
   before_script:
-    - go install github.com/sentinel-cli/sentinel/v2/cmd/sentinel@latest
+    - go install github.com/crenoxhq/crenox/v2/cmd/crenox@latest
   script:
     # Run scan; output JSON to file and print pretty results to console
-    - sentinel scan -f pretty -o sentinel-report.json .
+    - crenox scan -f pretty -o crenox-report.json .
   artifacts:
     when: always
     paths:
-      - sentinel-report.json
+      - crenox-report.json
 ```
 
 ### Command Reference
 
 <details>
-<summary>sentinel run — pre-commit hook entry point</summary>
+<summary>crenox run — pre-commit hook entry point</summary>
 
 Scans staged changes only. Invoked automatically by the Git hook.
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-c, --config` | auto-detected | Path to `.sentinel.yaml` |
+| `-c, --config` | auto-detected | Path to `.crenox.yaml` |
 | `-f, --format` | `pretty` | `pretty` `json` `plain` `sarif` |
 | `--fail-fast` | false | Stop after the first finding |
 | `-v, --verbose` | false | Debug output to stderr |
@@ -662,11 +662,11 @@ Scans staged changes only. Invoked automatically by the Git hook.
 </details>
 
 <details>
-<summary>sentinel scan [path...] — ad-hoc scanner</summary>
+<summary>crenox scan [path...] — ad-hoc scanner</summary>
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-c, --config` | auto-detected | Path to `.sentinel.yaml` |
+| `-c, --config` | auto-detected | Path to `.crenox.yaml` |
 | `-f, --format` | `pretty` | `pretty` `json` `plain` `sarif` |
 | `-o, --output` | | Write report directly to file, preserving pretty stdout logs |
 | `-r, --recursive` | false | Walk subdirectories |
@@ -677,7 +677,7 @@ Scans staged changes only. Invoked automatically by the Git hook.
 </details>
 
 <details>
-<summary>sentinel install — hook installer</summary>
+<summary>crenox install — hook installer</summary>
 
 | Flag | Default | Description |
 |------|---------|-------------|
@@ -688,7 +688,7 @@ Scans staged changes only. Invoked automatically by the Git hook.
 </details>
 
 <details>
-<summary>sentinel update — OTA self-updater</summary>
+<summary>crenox update — OTA self-updater</summary>
 
 Downloads the latest stable release for the current OS/arch from the GitHub Releases API, verifies the binary, and atomically replaces the running executable. Falls back to `go install` if no pre-compiled binary matches the platform.
 
@@ -696,7 +696,7 @@ Downloads the latest stable release for the current OS/arch from the GitHub Rele
 |------|---------|-------------|
 | `--beta` | false | Allow updating to pre-release (beta) versions |
 
-A background check runs on each invocation, querying the API at most once per 24 hours. The result is cached at `~/.config/sentinel/last_check.json`. A notice is printed to stderr if a newer version is available.
+A background check runs on each invocation, querying the API at most once per 24 hours. The result is cached at `~/.config/crenox/last_check.json`. A notice is printed to stderr if a newer version is available.
 
 </details>
 
@@ -707,7 +707,7 @@ A background check runs on each invocation, querying the API at most once per 24
 **Clean (exit 0):**
 
 ```
-  SENTINEL CLEAN  --  4 file(s) scanned in 3.2ms
+  CRENOX CLEAN  --  4 file(s) scanned in 3.2ms
 ```
 
 **Blocked (exit 1):**
@@ -734,7 +734,7 @@ A background check runs on each invocation, querying the API at most once per 24
 
 ```json
 {
-  "sentinel_version": "v2.x.x",
+  "crenox_version": "v2.x.x",
   "status": "blocked",
   "scanned_files": 4,
   "elapsed_ms": 5,
@@ -766,7 +766,7 @@ Tier 3 automatically eliminates the vast majority of false positives. For persis
 
 | Method | When to use |
 |--------|------------|
-| `sentinel:ignore` comment | One-off suppression for a specific line |
+| `crenox:ignore` comment | One-off suppression for a specific line |
 | Safe variable name (`dummy_`, `fake_`, `mock_`) | Test or documentation values that look like secrets |
 | **Automatic Mock Value Filter** | Automatically ignores generic token rules if values contain mock/fake/test/dummy |
 | **Key File Entropy Bypass** | Skips raw line-by-line entropy checks on key extensions (`.pem`, `.key`, `.rsa`, `.crt`, `.pub`) |
@@ -779,7 +779,7 @@ Tier 3 automatically eliminates the vast majority of false positives. For persis
 | Raise `entropy_threshold` | Codebase has many long high-entropy non-secret identifiers |
 
 ```yaml
-# .sentinel.yaml
+# .crenox.yaml
 allowlist_patterns:
   - "AKIAIOSFODNN7EXAMPLE"   # exact match
   - "sk_test_*"              # all Stripe test keys
@@ -818,7 +818,7 @@ Contributions are welcome. All contributors must agree to the **[Contributor Lic
 <details>
 <summary>Repository SEO Optimization (Developer Reference)</summary>
 
-To ensure Sentinel ranks at the top of GitHub search results, make sure to add the following topics to your GitHub repository settings:
+To ensure Crenox ranks at the top of GitHub search results, make sure to add the following topics to your GitHub repository settings:
 `gitleaks-alternative`, `secret-scanner`, `pre-commit-hook`, `credentials-detector`, `security-tools`, `git-secrets-alternative`, `static-analysis`, `devsecops`.
 
 </details>

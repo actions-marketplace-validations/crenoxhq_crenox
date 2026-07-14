@@ -1,10 +1,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# .gitignore for the Sentinel project
+# .gitignore for the Crenox project
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Build outputs
 dist/
-/sentinel
+/crenox
 *.exe
 
 # Test coverage artifacts
@@ -30,8 +30,8 @@ Thumbs.db
 *~
 
 # Sensitive config (never commit real credentials)
-.sentinel.yaml
-!.sentinel.yaml.example
+.crenox.yaml
+!.crenox.yaml.example
 
 # Agent instruction cache & lockfiles
 .agents/
