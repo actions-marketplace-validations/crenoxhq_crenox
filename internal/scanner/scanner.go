@@ -191,10 +191,6 @@ func isLogIndicator(line []byte) bool {
 	return false
 }
 
-func isAlphaNum(b byte) bool {
-	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9')
-}
-
 var (
 	crenoxIgnoreBytes = []byte("crenox:ignore")
 	prefixSlash         = []byte("//")
